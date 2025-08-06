@@ -1,5 +1,7 @@
 package org.example.smslayerd.dao.custom.impl;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.example.smslayerd.dao.CRUD;
 import org.example.smslayerd.dao.custom.SubjectDao;
 import org.example.smslayerd.entity.Subject;
@@ -17,22 +19,29 @@ public class SubjectDAOImpl implements SubjectDao {
 
     @Override
     public boolean save(Subject dto) throws SQLException {
-        return false;
+        return CRUD.executeQuery("INSERT INTO Subject values (?,?)",dto.getSubjectID(),dto.getName());
     }
 
     @Override
     public ArrayList<Subject> getAll() throws SQLException {
-        return null;
+        String sql = "SELECT * FROM Subject";
+        ResultSet set = CRUD.executeQuery(sql);
+        ArrayList<Subject> subjects =new ArrayList<>();
+        while (set.next()) {
+            subjects.add(new Subject(set.getString("Subject_ID"), set.getString("Name")));
+        }
+        return subjects;
+
     }
 
     @Override
     public boolean update(Subject dto) throws SQLException {
-        return false;
+        return CRUD.executeQuery("UPDATE Subject SET Name=? WHERE Subject_ID=?",dto.getName(),dto.getSubjectID());
     }
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+       return CRUD.executeQuery("DELETE FROM Subject WHERE Subject_id=?",id);
     }
 
     @Override
@@ -42,13 +51,13 @@ public class SubjectDAOImpl implements SubjectDao {
 
     @Override
     public String getNewId() throws SQLException {
-        ResultSet set=CRUD.executeQuery("select Admin_ID from Admin order by Admin_ID desc limit 1");
+        ResultSet set=CRUD.executeQuery("SELECT Subject_ID FROM Subject ORDER BY Subject_ID DESC LIMIT 1;");
         if(set.next()){
             int i = Integer.parseInt(set.getString(1).replaceAll("\\D+", "")) + 1; // extract number and increment                i+=1;
-            return String.format("A"+"%03d", i);
+            return String.format("S"+"%03d", i);
 
         }else {
-            return "A001";
+            return "S001";
         }
 
 
@@ -56,6 +65,14 @@ public class SubjectDAOImpl implements SubjectDao {
 
     @Override
     public Subject search(String id) throws SQLException {
-        return null;
+        String sql = "SELECT  * FROM Subject WHERE Subject_ID= ? OR Name= ?";
+
+        ResultSet set = CRUD.executeQuery(sql, id, id);
+
+        if(set.next()) {
+            return new Subject(set.getString("Subject_ID"), set.getString("Name"));
+        }
+        return new Subject(null,null);
+
     }
 }

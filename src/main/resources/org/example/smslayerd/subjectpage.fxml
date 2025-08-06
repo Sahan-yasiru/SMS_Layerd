@@ -13,30 +13,30 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="898.0" prefWidth="1169.0" styleClass="pane" stylesheets="@assests/css/Dashborad.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.main.demo.controller.SubjectPageController">
+<AnchorPane prefHeight="898.0" prefWidth="1169.0" styleClass="pane" stylesheets="@assests/css/Dashborad.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.smslayerd.controller.SubjectPageController">
    <children>
       <ImageView fitHeight="913.0" fitWidth="1174.0" layoutX="1.0" onMouseClicked="#reFreshTable" rotate="180.0">
          <image>
-            <Image url="@images/backgroundpic.jpg" />
+            <Image url="@assests/images/backgroundpic.jpg" />
          </image>
       </ImageView>
-      <Label layoutX="25.0" layoutY="37.0" prefHeight="44.0" prefWidth="424.0" stylesheets="@css/main.css" text="Manage Subjects">
+      <Label layoutX="25.0" layoutY="37.0" prefHeight="44.0" prefWidth="424.0" stylesheets="@assests/css/main.css" text="Manage Subjects">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
       </Label>
-      <VBox layoutX="25.0" layoutY="209.0" prefHeight="326.0" prefWidth="544.0" spacing="20.0" styleClass="cover" stylesheets="@css/main.css">
+      <VBox layoutX="25.0" layoutY="209.0" prefHeight="326.0" prefWidth="544.0" spacing="20.0" styleClass="cover" stylesheets="@assests/css/main.css">
          <children>
             <HBox prefHeight="61.0" prefWidth="584.0">
                <children>
-                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@css/main.css" text="Subject ID          :" />
-                  <Label fx:id="lblSubID" prefHeight="54.0" prefWidth="371.0" styleClass="colorNormalF" stylesheets="@css/main.css" text="Subject ID" />
+                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@assests/css/main.css" text="Subject ID          :" />
+                  <Label fx:id="lblSubID" prefHeight="54.0" prefWidth="371.0" styleClass="colorNormalF" stylesheets="@assests/css/main.css" text="Subject ID" />
                </children>
             </HBox>
             <HBox prefHeight="61.0" prefWidth="584.0">
                <children>
-                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@css/main.css" text="Subject Name  :" />
-                  <TextField fx:id="txtSubName" prefHeight="45.0" prefWidth="378.0" styleClass="normalF" stylesheets="@css/main.css" />
+                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@assests/css/main.css" text="Subject Name  :" />
+                  <TextField fx:id="txtSubName" prefHeight="45.0" prefWidth="378.0" styleClass="normalF" stylesheets="@assests/css/main.css" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="163.0" prefWidth="544.0" spacing="80.0">
@@ -54,7 +54,7 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
       </VBox>
-      <TableView fx:id="tableView" layoutX="618.0" layoutY="187.0" onMouseClicked="#tableClicked" prefHeight="538.0" prefWidth="537.0" stylesheets="@css/Tables.css">
+      <TableView fx:id="tableView" layoutX="618.0" layoutY="187.0" onMouseClicked="#tableClicked" prefHeight="538.0" prefWidth="537.0" stylesheets="@assests/css/Tables.css">
         <columns>
           <TableColumn fx:id="colSubjectID" prefWidth="75.0" text="Subject_ID" />
           <TableColumn fx:id="colSubName" prefWidth="75.0" text="Name" />
@@ -78,12 +78,12 @@
             <Font name="System Bold Italic" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="169.0" layoutY="162.0" prefHeight="51.0" prefWidth="256.0" stylesheets="@css/main.css" text="Add,Remove,Update Subjects">
+      <Label layoutX="169.0" layoutY="162.0" prefHeight="51.0" prefWidth="256.0" stylesheets="@assests/css/main.css" text="Add,Remove,Update Subjects">
          <font>
             <Font name="System Bold Italic" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="SearchBar" alignment="CENTER" layoutX="383.0" layoutY="51.0" onKeyTyped="#searchSubject" prefHeight="45.0" prefWidth="434.0" promptText="Search Subject" style="-fx-background-color: #A8F1FF; -fx-background-radius: 20; -fx-border-color: #000000; -fx-border-radius: 20;" stylesheets="@css/mainpage.css">
+      <TextField fx:id="SearchBar" alignment="CENTER" layoutX="383.0" layoutY="51.0" onKeyTyped="#searchSubject" prefHeight="45.0" prefWidth="434.0" promptText="Search Subject" style="-fx-background-color: #A8F1FF; -fx-background-radius: 20; -fx-border-color: #000000; -fx-border-radius: 20;" stylesheets="@assests/css/mainpage.css">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>

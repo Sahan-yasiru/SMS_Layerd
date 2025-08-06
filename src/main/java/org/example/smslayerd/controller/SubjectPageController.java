@@ -1,5 +1,6 @@
 package org.example.smslayerd.controller;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,12 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import lk.ijse.main.demo.dto.DtoSubject;
-import lk.ijse.main.demo.getID.IDGenerator;
-import lk.ijse.main.demo.model.SubjectPageModel;
 import org.example.smslayerd.bo.BOFactory;
-import org.example.smslayerd.bo.custom.SubjectBO;
 import org.example.smslayerd.bo.custom.impl.SubjectBOImpl;
+import org.example.smslayerd.model.DtoSubject;
 import org.example.smslayerd.view.tdm.SubjectTM;
 
 import java.net.URL;
@@ -61,22 +59,31 @@ public class SubjectPageController implements Initializable {
     }
 
     public void btnSave(ActionEvent actionEvent) {
+        if(lblSubID.getText().isEmpty()||txtSubName.getText().isEmpty()){
+            new Alert(Alert.AlertType.ERROR,"Records are Empty").show();
+            return;
+        }
         try {
-            String result=subjectPageModel.subjectSave(new DtoSubject(lblSubID.getText(),txtSubName.getText()));
+            boolean result=subjectBO.save(new DtoSubject(lblSubID.getText(),txtSubName.getText()));
             reLode();
-            new Alert(Alert.AlertType.INFORMATION,result).show();
+            new Alert(Alert.AlertType.INFORMATION,result?"saved":"failed").show();
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
 
     }
     public void btnUpdate(ActionEvent actionEvent){
+        if(lblSubID.getText().isEmpty()||txtSubName.getText().isEmpty()){
+            new Alert(Alert.AlertType.ERROR,"Records are Empty").show();
+            return;
+        }
         try {
-            String result=subjectPageModel.updateSubject(new DtoSubject(lblSubID.getText(),txtSubName.getText()));
+            boolean result=subjectBO.update(new DtoSubject(lblSubID.getText(),txtSubName.getText()));
             reLode();
-            new Alert(Alert.AlertType.INFORMATION,result).show();
+            new Alert(Alert.AlertType.INFORMATION,result?"Updated":"Failed").show();
 
         }catch (Exception e){
+            e.printStackTrace();
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
 
@@ -84,9 +91,9 @@ public class SubjectPageController implements Initializable {
 
     public void btnDelete(ActionEvent actionEvent) {
         try {
-            String result=subjectPageModel.deleteSubject(new DtoSubject(lblSubID.getText(),null));
+            boolean result=subjectBO.delete(lblSubID.getText());
             reLode();
-            new Alert(Alert.AlertType.INFORMATION,result).show();
+            new Alert(Alert.AlertType.INFORMATION,result?"Deleted":"Failed").show();
         }catch (Exception e){
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
@@ -96,8 +103,12 @@ public class SubjectPageController implements Initializable {
         colSubName.setCellValueFactory(new PropertyValueFactory<>("Name"));
 
         try {
-            ObservableList<DtoSubject> dtoSubjects =subjectPageModel.getSubjectData();
-            tableView.setItems(dtoSubjects);
+            ObservableList<SubjectTM> subjectTMS= FXCollections.observableArrayList();
+            subjectBO.getAll().forEach(subjectdto ->{
+                subjectTMS.add(new SubjectTM(subjectdto.getSubjectID(),subjectdto.getName()));
+            });
+
+            tableView.setItems(subjectTMS);
         }catch (Exception e){
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
@@ -119,7 +130,7 @@ public class SubjectPageController implements Initializable {
     }
     public void setNumber(){
         try {
-            String result=subjectPageModel.getNumber();
+            String result=subjectBO.getNumber();
             lblNumber.setText(result);
         }catch (Exception e){
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
@@ -132,26 +143,24 @@ public class SubjectPageController implements Initializable {
 
     public void searchSubject(KeyEvent keyEvent) {
         try {
-            ObservableList<DtoSubject> dtoSubjects = subjectPageModel.searchSubject(SearchBar.getText());
-            tableView.setItems(dtoSubjects);
+            DtoSubject dtoSubject=subjectBO.search(SearchBar.getText());
+            tableView.getItems().clear();
+            tableView.getItems().add(new SubjectTM(dtoSubject.getSubjectID(),dtoSubject.getName()));
         }catch (Exception e){
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
-
-
-
     }
 
 
     public void tableClicked(MouseEvent mouseEvent) {
-        DtoSubject dtoSubject=tableView.getSelectionModel().getSelectedItem();
+        SubjectTM subjectTM =tableView.getSelectionModel().getSelectedItem();
 
-        if(dtoSubject !=null){
+        if(subjectTM !=null){
             saveButton.setDisable(true);
             UpdateButton.setDisable(false);
             DeleteBtn.setDisable(false);
-            lblSubID.setText(dtoSubject.getSubjectID());
-            txtSubName.setText(dtoSubject.getName());
+            lblSubID.setText(subjectTM.getSubjectID());
+            txtSubName.setText(subjectTM.getName());
         }
 
 
