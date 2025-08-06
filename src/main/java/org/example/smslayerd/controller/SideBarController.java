@@ -103,4 +103,37 @@ public class SideBarController implements Initializable {
         }
     }
 
+    public void mouseEnterd(MouseEvent event) {
+        if (event.getSource() instanceof Button) {
+            Button btn = (Button) event.getSource();
+
+            ScaleTransition scaleT = new ScaleTransition(Duration.millis(200), btn);
+            scaleT.setToX(1.2);
+            scaleT.setToY(1.2);
+            scaleT.play();
+
+            DropShadow glow = new DropShadow();
+            glow.setColor(Color.CORNFLOWERBLUE);
+            glow.setWidth(15);
+            glow.setHeight(15);
+            glow.setRadius(15);
+            btn.setEffect(glow);
+
+        }
+    }
+
+    public void mouseExited(MouseEvent event) {
+        if (event.getSource() instanceof Button) {
+            Button btn = (Button) event.getSource();
+            ScaleTransition scaleT = new ScaleTransition(Duration.millis(200), btn);
+            scaleT.setToX(1);
+            scaleT.setToY(1);
+            scaleT.play();
+
+            btn.setEffect(null);
+        }
+    }
+
 }
+
+
