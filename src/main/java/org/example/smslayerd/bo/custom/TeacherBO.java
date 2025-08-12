@@ -1,6 +1,7 @@
 package org.example.smslayerd.bo.custom;
 
 import org.example.smslayerd.bo.SuperBO;
+import org.example.smslayerd.model.DtoStudent;
 import org.example.smslayerd.model.DtoTeacher;
 
 import java.sql.SQLException;

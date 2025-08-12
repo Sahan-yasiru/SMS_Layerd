@@ -32,7 +32,7 @@ public class AttendanceMainPageController implements Initializable {
         try {
             System.out.println("lorded");
             tempPane.getChildren().clear();
-            AnchorPane pane = FXMLLoader.load(getClass().getResource("/view/" + location));
+            AnchorPane pane = FXMLLoader.load(getClass().getResource("/org/example/smslayerd/" + location));
             tempPane.getChildren().add(pane);
         } catch (IOException e) {
             e.printStackTrace();

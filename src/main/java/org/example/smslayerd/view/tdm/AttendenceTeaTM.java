@@ -1,5 +1,6 @@
 package org.example.smslayerd.view.tdm;
 
+import org.example.smslayerd.model.DtoAttendenceTea;
 import org.example.smslayerd.view.toggleButton.ToggleSwitch;
 
 public class AttendenceTeaTM {
@@ -18,6 +19,14 @@ public class AttendenceTeaTM {
         this.teacherID = teacherID;
         this.classID = classID;
         this.toggleSwitch = toggleSwitch;
+    }
+    public AttendenceTeaTM(DtoAttendenceTea dtoAttendenceTea) {
+        this.attendID = dtoAttendenceTea.getAttendID();
+        this.Date = dtoAttendenceTea.getDate();
+        this.adminID = dtoAttendenceTea.getAdminID();
+        this.teacherID = dtoAttendenceTea.getTeacherID();
+        this.classID = dtoAttendenceTea.getClassID();
+        this.toggleSwitch = dtoAttendenceTea.getToggleSwitch();
     }
     public AttendenceTeaTM() {}
 

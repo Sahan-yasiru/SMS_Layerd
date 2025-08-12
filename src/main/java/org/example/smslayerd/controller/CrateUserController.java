@@ -27,7 +27,7 @@ public class CrateUserController implements Initializable {
     private Label labelAdminID;
     @FXML
     private TextField txtEmail,txtOpt,txtUserName,txtPassword;
-    private UserBO userBO= (UserBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.User);
+    private UserBO userBO= (UserBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.User);
     private String Email ="sahanyasiru460@gmail.com";
     private String passworld ="wzcy roga qusf cnaf";
     @FXML

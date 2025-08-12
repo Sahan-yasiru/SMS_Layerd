@@ -2,6 +2,7 @@ package org.example.smslayerd.bo.custom.impl;
 
 import org.example.smslayerd.bo.custom.SubjectBO;
 import org.example.smslayerd.dao.DAOFactory;
+import org.example.smslayerd.dao.custom.SubjectDao;
 import org.example.smslayerd.dao.custom.impl.SubjectDAOImpl;
 import org.example.smslayerd.entity.Subject;
 import org.example.smslayerd.model.DtoSubject;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 
 public class SubjectBOImpl implements SubjectBO {
 
-    SubjectDAOImpl subjectDAO=(SubjectDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Subject);
+    SubjectDao subjectDAO=(SubjectDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Subject);
     @Override
     public ArrayList<DtoSubject> getAll() throws SQLException {
         ArrayList<DtoSubject> dtoSubjects=new ArrayList<>();

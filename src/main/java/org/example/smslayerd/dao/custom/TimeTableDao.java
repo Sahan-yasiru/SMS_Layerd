@@ -8,4 +8,5 @@ import java.util.ArrayList;
 
 public interface TimeTableDao extends CRUDDao<TimeTable> {
 
+    public ArrayList<TimeTable> getAllByDate() throws SQLException;
 }

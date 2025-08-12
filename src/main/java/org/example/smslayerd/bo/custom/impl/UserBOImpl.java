@@ -12,7 +12,12 @@ import java.util.ArrayList;
 
 public class UserBOImpl implements UserBO {
 
-    UserDao loginUserDAO= (UserDAOImpl)DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.User);
+    UserDao loginUserDAO= (UserDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.User);
+
+    @Override
+    public String getAdminName(String id) throws SQLException {
+        return loginUserDAO.getAdminName(id);
+    }
 
     @Override
     public String getPassword(String adminId) throws SQLException {

@@ -19,5 +19,5 @@ public interface UserBO  extends SuperBO {
     public boolean adminUpdateWithType(DtoAdmin dtoAdmin, boolean type) throws SQLException;
     public String getNumber() throws SQLException;
     String getPassword(String adminId) throws SQLException;
-
+    public String getAdminName(String id) throws SQLException;
 }

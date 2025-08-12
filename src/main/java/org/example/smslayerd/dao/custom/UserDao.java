@@ -16,4 +16,6 @@ public interface UserDao extends CRUDDao<Admin> {
     ArrayList<Admin> getAll(boolean type) throws SQLException;
 
     String getPassword(String adminId) throws SQLException;
+    public String getAdminName(String id) throws SQLException;
+
 }

@@ -1,5 +1,7 @@
 package org.example.smslayerd.view.tdm;
 
+import org.example.smslayerd.entity.AttendenceStu;
+import org.example.smslayerd.model.DtoAttendenceStu;
 import org.example.smslayerd.view.toggleButton.ToggleSwitch;
 
 public class AttendenceStuTM {
@@ -20,6 +22,14 @@ public class AttendenceStuTM {
         this.toggleSwitch = toggleSwitch;
     }
     public AttendenceStuTM() {}
+    public AttendenceStuTM(DtoAttendenceStu attendenceStu) {
+        this.attendID = attendenceStu.getAttendID();
+        this.Date = attendenceStu.getDate();
+        this.adminID = attendenceStu.getAdminID();
+        this.studentID = attendenceStu.getStudentID();
+        this.classID = attendenceStu.getClassID();
+        this.toggleSwitch = attendenceStu.getToggleSwitch();
+    }
 
     public String getAttendID() {
         return attendID;

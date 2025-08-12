@@ -13,6 +13,11 @@ import java.util.ArrayList;
 
 public class TimeTableDAOImpl implements TimeTableDao, QueryDAO {
     @Override
+    public ArrayList[] checkRegistered() throws SQLException {
+        return new ArrayList[0];
+    }
+
+    @Override
     public String getNumber() throws SQLException {
         return "";
     }

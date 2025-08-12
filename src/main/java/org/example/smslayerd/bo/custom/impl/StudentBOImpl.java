@@ -2,28 +2,48 @@ package org.example.smslayerd.bo.custom.impl;
 
 import org.example.smslayerd.bo.custom.StudentBO;
 import org.example.smslayerd.dao.DAOFactory;
-import org.example.smslayerd.dao.custom.impl.StudentDAOImpl;
+import org.example.smslayerd.dao.custom.AttendStudentDAO;
+import org.example.smslayerd.dao.custom.StudentDao;
+import org.example.smslayerd.db.DBController;
+import org.example.smslayerd.entity.AttendenceStu;
+import org.example.smslayerd.entity.Student;
 import org.example.smslayerd.model.DtoStudent;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class StudentBOImpl  implements StudentBO {
+public class StudentBOImpl implements StudentBO {
 
-    StudentDAOImpl studentDAO= (StudentDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Student);
+    StudentDao studentDAO = (StudentDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Student);
+    AttendStudentDAO attendStudentDAO = (AttendStudentDAO) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.AttendanceStu);
+
+    @Override
+    public ArrayList<DtoStudent> getStudentIDs() throws SQLException {
+        ArrayList<DtoStudent> dtoStudents = new ArrayList<>();
+        studentDAO.getStudentIDs().forEach(student -> {
+            dtoStudents.add(new DtoStudent(student.getStudentID(), 0, null, null, 0, null));
+        });
+        return dtoStudents;
+    }
+
     @Override
     public ArrayList<DtoStudent> getAll() throws SQLException {
-        return null;
+        ArrayList<DtoStudent> students = new ArrayList<>();
+        studentDAO.getAll().forEach(student -> {
+            students.add(new DtoStudent(student));
+        });
+        return students;
     }
 
     @Override
     public boolean save(DtoStudent dto) throws SQLException {
-        return false;
+        return studentDAO.save(new Student(dto));
     }
 
     @Override
     public boolean update(DtoStudent dto) throws SQLException {
-        return false;
+        return studentDAO.update(new Student(dto));
     }
 
     @Override
@@ -57,7 +77,7 @@ public class StudentBOImpl  implements StudentBO {
 
     @Override
     public String getNewId() throws SQLException {
-        return "";
+        return studentDAO.getNewId();
     }
 
     @Override

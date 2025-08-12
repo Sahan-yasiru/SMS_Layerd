@@ -2,7 +2,9 @@ package org.example.smslayerd.bo.custom.impl;
 
 import org.example.smslayerd.bo.custom.TeacherBO;
 import org.example.smslayerd.dao.DAOFactory;
+import org.example.smslayerd.dao.custom.TeacherDao;
 import org.example.smslayerd.dao.custom.impl.TeacherDAOImpl;
+import org.example.smslayerd.model.DtoStudent;
 import org.example.smslayerd.model.DtoTeacher;
 
 import java.sql.SQLException;
@@ -10,10 +12,17 @@ import java.util.ArrayList;
 
 public class TeacherBOImpl implements TeacherBO {
 
-    TeacherDAOImpl teacherDAO=(TeacherDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Teacher);
+    TeacherDao teacherDAO=(TeacherDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Teacher);
+
+
+
     @Override
     public ArrayList<DtoTeacher> getAll() throws SQLException {
-        return null;
+        ArrayList<DtoTeacher> dtoTeachers=new ArrayList<>();
+        teacherDAO.getAll().forEach(teacher -> {
+            dtoTeachers.add(new DtoTeacher(teacher));
+        });
+        return dtoTeachers;
     }
 
     @Override

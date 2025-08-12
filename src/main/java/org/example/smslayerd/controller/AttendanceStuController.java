@@ -1,5 +1,7 @@
 package org.example.smslayerd.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -10,15 +12,26 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.StringConverter;
-import lk.ijse.main.demo.dto.DtoAttendenceStu;
-import lk.ijse.main.demo.getID.IDGenerator;
-import lk.ijse.main.demo.model.AttendStuModel;
-import lk.ijse.main.demo.toggleButton.ToggleSwitch;
+import org.example.smslayerd.bo.BOFactory;
+import org.example.smslayerd.bo.custom.AttendanceStuBO;
+import org.example.smslayerd.bo.custom.ClassBO;
+import org.example.smslayerd.bo.custom.StudentBO;
+import org.example.smslayerd.bo.custom.UserBO;
+import org.example.smslayerd.bo.custom.impl.AttendanceStuBOImpl;
+import org.example.smslayerd.bo.custom.impl.ClassBOImpl;
+import org.example.smslayerd.bo.custom.impl.StudentBOImpl;
+import org.example.smslayerd.bo.custom.impl.UserBOImpl;
+import org.example.smslayerd.model.DtoAttendenceStu;
+import org.example.smslayerd.model.DtoClass;
+import org.example.smslayerd.model.DtoStudent;
+import org.example.smslayerd.view.tdm.AttendenceStuTM;
+import org.example.smslayerd.view.toggleButton.ToggleSwitch;
 
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class AttendanceStuController implements Initializable {
@@ -43,21 +56,23 @@ public class AttendanceStuController implements Initializable {
     @FXML
     private ComboBox<String> cmbStuID;
     @FXML
-    private TableView<DtoAttendenceStu> tableView;
+    private TableView<AttendenceStuTM> tableView;
     @FXML
-    private TableColumn<DtoAttendenceStu, String> colAttendID, colDate, colAdminID, colStudentID, colClassID;
+    private TableColumn<AttendenceStuTM, String> colAttendID, colDate, colAdminID, colStudentID, colClassID;
     @FXML
-    private TableColumn<DtoAttendenceStu, ToggleSwitch> colStatus;
-    private AttendStuModel  attendStuModel;
-    private IDGenerator idGenerator = new IDGenerator();
+    private TableColumn<AttendenceStuTM, ToggleSwitch> colStatus;
+
+    private AttendanceStuBO attendanceStuBO = (AttendanceStuBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.AttendanceStu);
+    private UserBO userBO = (UserBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.User);
+    private ClassBO classBO = (ClassBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
+    private StudentBO studentBO = (StudentBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Student);
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        attendStuModel = new AttendStuModel();
         try {
-            adminID.setText(attendStuModel.getAdminName(LoginController.getLabel()));
+            adminID.setText(userBO.getAdminName(LoginController.getLabel()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -87,9 +102,19 @@ public class AttendanceStuController implements Initializable {
     }
 
     public void lordCoboBoxes() {
+        ObservableList<String> strings = FXCollections.observableArrayList();
         try {
-            cmbclassID.setItems(attendStuModel.lordClassIDS());
-            cmbStuID.setItems(attendStuModel.lordStuIDs());
+            ArrayList<DtoClass> dtoClasses = classBO.getClassIDs();
+            dtoClasses.forEach(dtoClass -> {
+                strings.add(dtoClass.getClassID());
+            });
+            cmbclassID.setItems(strings);
+            strings.clear();
+            ArrayList<DtoStudent> dtoStudents = studentBO.getStudentIDs();
+            dtoStudents.forEach(dtoStudent -> {
+                strings.add(dtoStudent.getStudentID());
+            });
+            cmbStuID.setItems(strings);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -129,7 +154,7 @@ public class AttendanceStuController implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    DtoAttendenceStu data = getTableView().getItems().get(getIndex());
+                    AttendenceStuTM data = getTableView().getItems().get(getIndex());
                     if (data != null) {
                         System.out.println(data);
                         setGraphic(data.getToggleSwitch());
@@ -141,7 +166,11 @@ public class AttendanceStuController implements Initializable {
         });
 
         try {
-            tableView.setItems(attendStuModel.loadTable());
+            ObservableList<AttendenceStuTM> attendenceStuTMS = FXCollections.observableArrayList();
+            attendanceStuBO.getAll().forEach(dtoAttendenceStu -> {
+                attendenceStuTMS.add(new AttendenceStuTM(dtoAttendenceStu));
+            });
+            tableView.setItems(attendenceStuTMS);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,7 +182,7 @@ public class AttendanceStuController implements Initializable {
         btnSave.setDisable(false);
         btnUpdate.setDisable(true);
         try {
-            attendanceID.setText(idGenerator.getID("AT", "Attend_ID", "Attendance_Stu"));
+            attendanceID.setText(attendanceStuBO.getNewId());
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -175,22 +204,22 @@ public class AttendanceStuController implements Initializable {
         btnSave.setDisable(true);
         btnUpdate.setDisable(false);
         btnDelete.setDisable(false);
-        DtoAttendenceStu dtoAttendenceStu = tableView.getSelectionModel().getSelectedItem();
-        if (dtoAttendenceStu != null) {
-            attendanceID.setText(dtoAttendenceStu.getAttendID());
-            adminID.setText(dtoAttendenceStu.getAdminID());
-            cmbStuID.setValue(dtoAttendenceStu.getStudentID());
-            cmbclassID.setValue(dtoAttendenceStu.getClassID());
-            datePicker.setValue(LocalDate.parse(dtoAttendenceStu.getDate()));
-            if (dtoAttendenceStu.getStatus() == false) {
+        AttendenceStuTM attendenceStuTM = tableView.getSelectionModel().getSelectedItem();
+        if (attendenceStuTM != null) {
+            attendanceID.setText(attendenceStuTM.getAttendID());
+            adminID.setText(attendenceStuTM.getAdminID());
+            cmbStuID.setValue(attendenceStuTM.getStudentID());
+            cmbclassID.setValue(attendenceStuTM.getClassID());
+            datePicker.setValue(LocalDate.parse(attendenceStuTM.getDate()));
+            if (attendenceStuTM.getStatus() == false) {
                 setAttendLabel(false);
             } else {
                 setAttendLabel(true);
 
             }
             try {
-                System.out.println(dtoAttendenceStu);
-                attendStuModel.setAttendance(dtoAttendenceStu.getAttendID(), dtoAttendenceStu.getToggleSwitch().getSwitchedOn());
+                System.out.println(attendenceStuTM);
+                boolean b = attendanceStuBO.setAttendance(attendenceStuTM.getAttendID(), attendenceStuTM.getToggleSwitch().getSwitchedOn());
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -212,10 +241,18 @@ public class AttendanceStuController implements Initializable {
                 }
             } else if (chackDate(datePicker.getValue())) {
                 try {
-                    String string = attendStuModel.updateAtted(new DtoAttendenceStu(attendanceID.getText(),
+                    DtoAttendenceStu dtoAttendenceStu = new DtoAttendenceStu(attendanceID.getText(),
                             datePicker.getValue().toString(), adminID.getText(), cmbStuID.getValue(),
-                            cmbclassID.getValue(), btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false)));
-                    new Alert(Alert.AlertType.INFORMATION, string).show();
+                            cmbclassID.getValue(), btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false));
+                    if (attendanceStuBO.ifExitSP(dtoAttendenceStu)) {
+                        boolean b = attendanceStuBO.update(new DtoAttendenceStu(attendanceID.getText(),
+                                datePicker.getValue().toString(), adminID.getText(), cmbStuID.getValue(),
+                                cmbclassID.getValue(), btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false)));
+                        new Alert(Alert.AlertType.INFORMATION, b ? "Done" : "Failed").show();
+                    } else {
+                        new Alert(Alert.AlertType.INFORMATION, "Something went Wrong").show();
+
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -236,8 +273,8 @@ public class AttendanceStuController implements Initializable {
 
     public void deleteAttend(ActionEvent actionEvent) {
         try {
-            String result = attendStuModel.deleteAttedStu(attendanceID.getText());
-            new Alert(Alert.AlertType.INFORMATION, result).show();
+            boolean result = attendanceStuBO.delete(attendanceID.getText());
+            new Alert(Alert.AlertType.INFORMATION, result ? "Deleted" : "Failed").show();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -254,11 +291,17 @@ public class AttendanceStuController implements Initializable {
             }
         } else if (chackDate(datePicker.getValue())) {
             try {
-                String string = attendStuModel.saveAttedStu(new DtoAttendenceStu(attendanceID.getText(),
+                DtoAttendenceStu dtoAttendenceStu = new DtoAttendenceStu(attendanceID.getText(),
                         datePicker.getValue().toString(), adminID.getText(), cmbStuID.getValue(),
-                        cmbclassID.getValue(), btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false)));
-                new Alert(Alert.AlertType.INFORMATION, string).show();
-
+                        cmbclassID.getValue(), btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false));
+                if (!attendanceStuBO.ifExitSP(dtoAttendenceStu)) {
+                    boolean result = attendanceStuBO.save(new DtoAttendenceStu(attendanceID.getText(),
+                            datePicker.getValue().toString(), adminID.getText(), cmbStuID.getValue(),
+                            cmbclassID.getValue(), btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false)));
+                    new Alert(Alert.AlertType.INFORMATION, result ? "Saved" : "Something went Wrong.. ! ").show();
+                } else {
+                    new Alert(Alert.AlertType.INFORMATION, "Already saved.. ! ").show();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -275,7 +318,12 @@ public class AttendanceStuController implements Initializable {
 
     public void lordStudentIDs(MouseEvent mouseEvent) {
         try {
-            cmbStuID.setItems(attendStuModel.lordStuIDs());
+            ObservableList<String> strings = FXCollections.observableArrayList();
+            ArrayList<DtoStudent> dtoStudents = studentBO.getStudentIDs();
+            dtoStudents.forEach(dtoStudent -> {
+                strings.add(dtoStudent.getStudentID());
+            });
+            cmbStuID.setItems(strings);
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -285,7 +333,12 @@ public class AttendanceStuController implements Initializable {
 
     public void lordClassIDs(MouseEvent mouseEvent) {
         try {
-            cmbclassID.setItems(attendStuModel.lordClassIDS());
+            ObservableList<String> strings = FXCollections.observableArrayList();
+            ArrayList<DtoClass> dtoStudents = classBO.getClassIDs();
+            dtoStudents.forEach(dtoClass -> {
+                strings.add(dtoClass.getClassID());
+            });
+            cmbclassID.setItems(strings);
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -299,7 +352,7 @@ public class AttendanceStuController implements Initializable {
 
     public void teaSearch() {
         lordTable();
-        FilteredList<DtoAttendenceStu> filterDate = new FilteredList<>(tableView.getItems(), e -> true);
+        FilteredList<AttendenceStuTM> filterDate = new FilteredList<>(tableView.getItems(), e -> true);
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filterDate.setPredicate(dto -> {
                 if (newValue == null || newValue.isEmpty()) {
@@ -310,12 +363,12 @@ public class AttendanceStuController implements Initializable {
                 return dto.getAttendID().toLowerCase().contains(filterText) ||
                         dto.getClassID().toString().contains(filterText) ||
                         dto.getAdminID().toLowerCase().contains(filterText) ||
-                        dto.getStudentID() .toLowerCase().contains(filterText) ||
+                        dto.getStudentID().toLowerCase().contains(filterText) ||
                         dto.getDate().toLowerCase().contains(filterText);
 
             });
         });
-        SortedList<DtoAttendenceStu> sortedList = new SortedList<>(filterDate);
+        SortedList<AttendenceStuTM> sortedList = new SortedList<>(filterDate);
         sortedList.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedList);
 

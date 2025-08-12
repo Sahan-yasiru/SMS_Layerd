@@ -27,50 +27,50 @@
             <Label fx:id="lblWelcome" prefHeight="50.0" prefWidth="188.0" styleClass="font" stylesheets="@assests/css/mainpage.css" text="Welcome Admin" />
             <VBox prefHeight="691.0" prefWidth="285.0" spacing="20.0">
                <children>
-                  <Button fx:id="btnDashbord" mnemonicParsing="false" onAction="#lordDashBord" prefHeight="69.0" prefWidth="259.0" styleClass="buttons" stylesheets="@assests/css/mainpage.css" text="DashBord" />
-                  <Button mnemonicParsing="false" onAction="#lordSettings" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Settings">
+                  <Button fx:id="btnDashbord" mnemonicParsing="false" onAction="#lordDashBord" prefHeight="69.0" prefWidth="259.0" styleClass="buttons" stylesheets="@assests/css/mainpage.css" text="DashBord" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited" />
+                  <Button mnemonicParsing="false" onAction="#lordSettings" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Settings" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass></Button>
-                  <Button mnemonicParsing="false" onAction="#lordSubject" prefHeight="69.0" prefWidth="259.0" styleClass="buttons" stylesheets="@assests/css/mainpage.css" text="Manage Subjects" />
-                  <Button mnemonicParsing="false" onAction="#lordAttendance" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Attendance">
+                  <Button mnemonicParsing="false" onAction="#lordSubject" prefHeight="69.0" prefWidth="259.0" styleClass="buttons" stylesheets="@assests/css/mainpage.css" text="Manage Subjects" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited" />
+                  <Button mnemonicParsing="false" onAction="#lordAttendance" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Attendance" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#lordStudent" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Student">
+                  <Button mnemonicParsing="false" onAction="#lordStudent" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Student" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#lordTeacher" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Teacher">
+                  <Button mnemonicParsing="false" onAction="#lordTeacher" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Teacher" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#lordClasses" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Classes">
+                  <Button mnemonicParsing="false" onAction="#lordClasses" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Classes" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#lordExmas" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Exam">
+                  <Button mnemonicParsing="false" onAction="#lordExmas" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Exam" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#lordTimeTable" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Time Table">
+                  <Button mnemonicParsing="false" onAction="#lordTimeTable" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" text="Time Table" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />
                      </styleClass>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#pressedExit" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css">
+                  <Button mnemonicParsing="false" onAction="#pressedExit" prefHeight="69.0" prefWidth="259.0" stylesheets="@assests/css/mainpage.css" onMouseEntered="#mouseEnterd" onMouseExited="#mouseExited">
                      <styleClass>
                         <String fx:value="buttons" />
                         <String fx:value="pane" />

@@ -14,7 +14,9 @@ public class BOFactory {
         Student,
         Teacher,
         Subject,
-        TimeTable
+        TimeTable,
+        AttendanceStu,
+        AttendanceTea,
     }
     public SuperBO getBOType(BOTypes boEnumType){
         switch (boEnumType){
@@ -24,6 +26,8 @@ public class BOFactory {
             case Teacher:return new TeacherBOImpl();
             case Subject:return new SubjectBOImpl();
             case TimeTable:return new TimeTableBOImpl();
+            case AttendanceStu:return new AttendanceStuBOImpl();
+            case AttendanceTea:return new AttendanceTeaBOImpl();
             default: return null;
         }
 

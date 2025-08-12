@@ -13,6 +13,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserDAOImpl implements UserDao {
+
+    @Override
+    public String getAdminName(String id) throws SQLException {
+        String sql = "SELECT Admin_ID FROM Admin WHERE User_name = ?";
+        ResultSet resultSet = CRUD.executeQuery(sql, id);
+        String result = "";
+
+        while (resultSet.next()) {
+            result = resultSet.getString(1);
+        }
+
+        return result;
+    }
+
     @Override
     public String getPassword(String adminId) throws SQLException {
 

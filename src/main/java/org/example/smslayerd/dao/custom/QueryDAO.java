@@ -9,5 +9,6 @@ import java.util.ArrayList;
 
 public interface QueryDAO extends SuperDao {
     public ArrayList<TimeTable> getAllByDate()throws SQLException;
+    public ArrayList[] checkRegistered()throws SQLException;
 
 }

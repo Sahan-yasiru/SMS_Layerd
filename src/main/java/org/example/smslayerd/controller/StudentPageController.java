@@ -10,9 +10,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import lk.ijse.main.demo.dto.DtoStudent;
-import lk.ijse.main.demo.getID.IDGenerator;
-import lk.ijse.main.demo.model.StudetModel;
+import org.example.smslayerd.bo.BOFactory;
+import org.example.smslayerd.bo.custom.ClassBO;
+import org.example.smslayerd.bo.custom.StudentBO;
+import org.example.smslayerd.bo.custom.impl.ClassBOImpl;
+import org.example.smslayerd.bo.custom.impl.StudentBOImpl;
+import org.example.smslayerd.model.DtoStudent;
+import org.example.smslayerd.view.tdm.StudentTM;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -28,7 +32,7 @@ public class StudentPageController implements Initializable {
     @FXML
     private ComboBox<Integer> cmbGrade;
     @FXML
-    private TableView<DtoStudent> tableView;
+    private TableView<StudentTM> tableView;
     @FXML
     private Button saveButton;
     @FXML
@@ -40,18 +44,16 @@ public class StudentPageController implements Initializable {
     @FXML
     private Label lblStudentID;
     @FXML
-    private TableColumn<DtoStudent, String> colStudetID, colClassID, colName, colAddress;
+    private TableColumn<StudentTM, String> colStudetID, colClassID, colName, colAddress;
     @FXML
-    private TableColumn<DtoStudent, Integer> colGrade, colTelNo;
+    private TableColumn<StudentTM, Integer> colGrade, colTelNo;
     @FXML
     private Label lblNumber;
-    private StudetModel studetModel;
-    private IDGenerator idGenerator;
+    private StudentBO studentBO= (StudentBOImpl)BOFactory.getInstance().getBOType(BOFactory.BOTypes.Student);
+    private ClassBO classBO=(ClassBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        studetModel = new StudetModel();
-        idGenerator = new IDGenerator();
         reLode();
         clear();
         deleteBtn.setOnAction(actionEvent -> {
@@ -68,7 +70,7 @@ public class StudentPageController implements Initializable {
 
     public void getID() {
         try {
-            lblStudentID.setText(idGenerator.getID("S", "Student_ID", "Student"));
+            lblStudentID.setText(studentBO.getNewId());
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -94,7 +96,7 @@ public class StudentPageController implements Initializable {
             }
             if (b) {
                 try {
-                    studetModel.studentSave(new DtoStudent(lblStudentID.getText(), tel, cmbClassID.getValue(), txtStuName.getText(), cmbGrade.getValue(), txtAdress.getText()));
+                    studentBO.save(new DtoStudent(lblStudentID.getText(), tel, cmbClassID.getValue(), txtStuName.getText(), cmbGrade.getValue(), txtAdress.getText()));
                     reLode();
                     clear();
                 } catch (SQLException e) {
@@ -124,7 +126,7 @@ public class StudentPageController implements Initializable {
 
             }
             try {
-                studetModel.updateStudent(new DtoStudent(lblStudentID.getText(), tel, cmbClassID.getValue(), txtStuName.getText(), cmbGrade.getValue(), txtAdress.getText()));
+                studentBO.update(new DtoStudent(lblStudentID.getText(), tel, cmbClassID.getValue(), txtStuName.getText(), cmbGrade.getValue(), txtAdress.getText()));
                 reLode();
                 clear();
             } catch (SQLException e) {
@@ -137,16 +139,14 @@ public class StudentPageController implements Initializable {
 
     public void btnDelete(ActionEvent actionEvent) {
         try {
-            DtoStudent dtoStudent = new DtoStudent();
-            dtoStudent.setStudentID(lblStudentID.getText());
             Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"DO you want to delete this student?",ButtonType.YES,ButtonType.NO);
             if (alert.showAndWait().get()==ButtonType.YES) {
-                String result = studetModel.deleteStu(dtoStudent);
-                new Alert(Alert.AlertType.INFORMATION, result).show();
+                boolean result = studentBO.delete(lblStudentID.getText());
+                new Alert(Alert.AlertType.INFORMATION, result?"Done":"Failed").show();
                 reLode();
                 clear();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -163,9 +163,13 @@ public class StudentPageController implements Initializable {
 
 
         try {
-            ObservableList<DtoStudent> dtoStudents = studetModel.getStudentData();
-            tableView.setItems(dtoStudents);
+            ObservableList<StudentTM> observableList=FXCollections.observableArrayList();
+            studentBO.getAll().forEach(dtoStudent -> {
+                observableList.add(new StudentTM(dtoStudent));
+            });
+            tableView.setItems(observableList);
         } catch (Exception e) {
+            e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
@@ -196,9 +200,10 @@ public class StudentPageController implements Initializable {
 
     public void setNumber() {
         try {
-            String result = studetModel.getNumber();
+            String result = studentBO.getNumber();
             lblNumber.setText(result);
         } catch (Exception e) {
+            e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
@@ -209,7 +214,7 @@ public class StudentPageController implements Initializable {
 
     public void searchSubject() {
         lordTable();
-        FilteredList<DtoStudent> filteredList=new FilteredList<>(tableView.getItems(),e-> true);
+        FilteredList<StudentTM> filteredList=new FilteredList<>(tableView.getItems(),e-> true);
         SearchBar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredList.setPredicate(dtoStudent -> {
                 if(newValue == null || newValue.isEmpty()){
@@ -224,7 +229,7 @@ public class StudentPageController implements Initializable {
                         Integer.toString(dtoStudent.getGrade()).toLowerCase().contains(filterText);
             });
         });
-        SortedList<DtoStudent> sortedList = new SortedList<>(filteredList);
+        SortedList<StudentTM> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedList);
 
@@ -233,18 +238,18 @@ public class StudentPageController implements Initializable {
 
     public void tableClicked(MouseEvent mouseEvent) {
         clear();
-        DtoStudent dtoStudent = tableView.getSelectionModel().getSelectedItem();
+        StudentTM Student = tableView.getSelectionModel().getSelectedItem();
 
-        if (dtoStudent != null) {
+        if (Student != null) {
             saveButton.setDisable(true);
             UpdateButton.setDisable(false);
             DeleteBtn.setDisable(false);
-            lblStudentID.setText(dtoStudent.getStudentID());
-            txtStuName.setText(dtoStudent.getName());
-            txtAdress.setText(dtoStudent.getAddress());
-            txtTelNo.setText(dtoStudent.getTelNO() + "");
-            cmbGrade.setValue(dtoStudent.getGrade());
-            cmbClassID.setValue(dtoStudent.getClassID());
+            lblStudentID.setText(Student.getStudentID());
+            txtStuName.setText(Student.getName());
+            txtAdress.setText(Student.getAddress());
+            txtTelNo.setText(Student.getTelNO() + "");
+            cmbGrade.setValue(Student.getGrade());
+            cmbClassID.setValue(Student.getClassID());
         }
 
 
@@ -252,7 +257,9 @@ public class StudentPageController implements Initializable {
 
     public void lordClassID(MouseEvent mouseEvent) {
         try {
-            cmbClassID.setItems(studetModel.getclassIDs());
+            classBO.getClassIDs().forEach(dtoClass->{
+                cmbClassID.getItems().add(dtoClass.getClassID());
+            });
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
             e.printStackTrace();

@@ -11,6 +11,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import org.example.smslayerd.bo.BOFactory;
+import org.example.smslayerd.bo.custom.*;
 import org.example.smslayerd.bo.custom.impl.*;
 import org.example.smslayerd.view.tdm.TimeTableTM;
 
@@ -43,11 +44,11 @@ public class DashBordController implements Initializable {
     private TableColumn<TimeTableTM,String> colEndTime;
     @FXML
     private  ImageView imageView;
-    private ClassBOImpl classBO= (ClassBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
-    private StudentBOImpl studentBO=(StudentBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Student);
-    private TeacherBOImpl teacherBO=(TeacherBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Teacher);
-    private SubjectBOImpl subjectBO=(SubjectBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Subject);
-    private TimeTableBOImpl timeTableBO=(TimeTableBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.TimeTable);
+    private ClassBO classBO= (ClassBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
+    private StudentBO studentBO=(StudentBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Student);
+    private TeacherBO teacherBO=(TeacherBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Teacher);
+    private SubjectBO subjectBO=(SubjectBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Subject);
+    private TimeTableBO timeTableBO=(TimeTableBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.TimeTable);
 
 
 

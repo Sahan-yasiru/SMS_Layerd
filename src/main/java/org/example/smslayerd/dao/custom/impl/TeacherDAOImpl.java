@@ -17,7 +17,12 @@ public class TeacherDAOImpl implements TeacherDao {
 
     @Override
     public ArrayList<Teacher> getAll() throws SQLException {
-        return null;
+        ResultSet set=CRUD.executeQuery("SELECT * FROM Teacher");
+        ArrayList<Teacher> teachers=new ArrayList<>();
+        while (set.next()){
+            teachers.add(new Teacher(set.getString(1),set.getString(2),set.getString(3),set.getString(4),set.getInt(5)));
+        }
+        return teachers;
     }
 
     @Override

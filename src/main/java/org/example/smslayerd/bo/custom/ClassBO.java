@@ -15,5 +15,6 @@ public interface ClassBO extends SuperBO {
     public String getNewId()throws SQLException;
     public DtoClass search(String id)throws SQLException;
     public String getNumber() throws SQLException;
+    public ArrayList<DtoClass> getClassIDs()throws SQLException;
 
 }

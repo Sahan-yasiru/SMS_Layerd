@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TimeTableBOImpl implements TimeTableBO {
-    private TimeTableDAOImpl timeTableDAO=(TimeTableDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.TimeTable);
+    private TimeTableDao timeTableDAO=(TimeTableDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.TimeTable);
     @Override
     public ArrayList<DtoTimeTable> getAll() throws SQLException {
         return null;

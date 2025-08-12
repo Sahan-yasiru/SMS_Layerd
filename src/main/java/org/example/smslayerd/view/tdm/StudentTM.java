@@ -1,6 +1,9 @@
 package org.example.smslayerd.view.tdm;
 
-public class StudentTM {
+import org.example.smslayerd.entity.Student;
+import org.example.smslayerd.model.DtoStudent;
+
+public class StudentTM  {
     private String studentID;
     private int telNO;
     private String classID;
@@ -15,6 +18,14 @@ public class StudentTM {
         this.name = name;
         this.grade = grade;
         this.address = address;
+    }
+    public StudentTM(DtoStudent student) {
+        this.studentID = student.getStudentID();
+        this.telNO = student.getTelNO();
+        this.classID = student.getClassID();
+        this.name = student.getName();
+        this.grade = student.getGrade();
+        this.address = student.getAddress();
     }
     public StudentTM() {}
 

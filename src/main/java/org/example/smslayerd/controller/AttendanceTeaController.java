@@ -1,5 +1,7 @@
 package org.example.smslayerd.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -10,10 +12,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.StringConverter;
-import lk.ijse.main.demo.dto.DtoAttendenceTea;
-import lk.ijse.main.demo.getID.IDGenerator;
-import lk.ijse.main.demo.model.AttendTeaModel;
-import lk.ijse.main.demo.toggleButton.ToggleSwitch;
+import org.example.smslayerd.bo.BOFactory;
+import org.example.smslayerd.bo.custom.AttendanceTeaBO;
+import org.example.smslayerd.bo.custom.ClassBO;
+import org.example.smslayerd.bo.custom.TeacherBO;
+import org.example.smslayerd.bo.custom.UserBO;
+import org.example.smslayerd.bo.custom.impl.AttendanceTeaBOImpl;
+import org.example.smslayerd.bo.custom.impl.ClassBOImpl;
+import org.example.smslayerd.bo.custom.impl.TeacherBOImpl;
+import org.example.smslayerd.bo.custom.impl.UserBOImpl;
+import org.example.smslayerd.model.DtoAttendenceTea;
+import org.example.smslayerd.view.tdm.AttendenceTeaTM;
+import org.example.smslayerd.view.toggleButton.ToggleSwitch;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -43,28 +53,27 @@ public class AttendanceTeaController implements Initializable {
     @FXML
     private ComboBox<String> cmbTeaID;
     @FXML
-    private TableView<DtoAttendenceTea> tableView;
+    private TableView<AttendenceTeaTM> tableView;
     @FXML
-    private TableColumn<DtoAttendenceTea, String> colAttendID, colDate, colAdminID, colTeacherID, colClassID;
+    private TableColumn<AttendenceTeaTM, String> colAttendID, colDate, colAdminID, colTeacherID, colClassID;
     @FXML
-    private TableColumn<DtoAttendenceTea, ToggleSwitch> colStatus;
+    private TableColumn<AttendenceTeaTM,ToggleSwitch> colStatus;
     @FXML
-    private TableColumn<DtoAttendenceTea, Void> colMark = new TableColumn<>("Mark");
-    private AttendTeaModel attendTeaModel;
-    private IDGenerator idGenerator = new IDGenerator();
+    private TableColumn<AttendenceTeaTM, Void> colMark = new TableColumn<>("Mark");
+    private AttendanceTeaBO attendanceTeaBO= (AttendanceTeaBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.AttendanceTea);
+    private UserBO userBO = (UserBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.User);
+    private ClassBO classBO = (ClassBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
+    private TeacherBO teacherBO=(TeacherBO) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Teacher);
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        attendTeaModel = new AttendTeaModel();
         try {
-            adminID.setText(attendTeaModel.getAdminName(LoginController.getLabel()));
+            adminID.setText(userBO.getAdminName(LoginController.getLabel()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
         chanageDateFormat();
-        lordCoboBoxes();
         setAttendLabel(true);
         reLord();
         teaSearch();
@@ -89,9 +98,18 @@ public class AttendanceTeaController implements Initializable {
     }
 
     public void lordCoboBoxes() {
+        ObservableList<String> observableList= FXCollections.observableArrayList();
         try {
-            cmbclassID.setItems(attendTeaModel.lordClassIDS());
-            cmbTeaID.setItems(attendTeaModel.lordTeaIDs());
+            classBO.getClassIDs().forEach(dtoClass -> {
+                observableList.add(dtoClass.getClassID());
+            });
+            cmbclassID.setItems(observableList);
+            observableList.clear();
+            teacherBO.getAll().forEach(teacherBO->{
+                observableList.add(teacherBO.getTeacherID());
+            });
+            cmbTeaID.setItems(observableList);
+            observableList.clear();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -130,7 +148,7 @@ public class AttendanceTeaController implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    DtoAttendenceTea data = getTableView().getItems().get(getIndex());
+                    AttendenceTeaTM data = getTableView().getItems().get(getIndex());
                     if (data != null) {
                         System.out.println(data);
                         setGraphic(data.getToggleSwitch());
@@ -142,7 +160,9 @@ public class AttendanceTeaController implements Initializable {
         });
 
         try {
-            tableView.setItems(attendTeaModel.loadTable());
+            attendanceTeaBO.getAll().forEach(teacherBO->{
+                tableView.getItems().add(new AttendenceTeaTM(teacherBO));
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -154,7 +174,7 @@ public class AttendanceTeaController implements Initializable {
         btnSave.setDisable(false);
         btnUpdate.setDisable(true);
         try {
-            attendanceID.setText(idGenerator.getID("AT", "Attend_ID", "Attendance_Tea"));
+            attendanceID.setText(attendanceTeaBO.getNewId());
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -176,22 +196,22 @@ public class AttendanceTeaController implements Initializable {
         btnSave.setDisable(true);
         btnUpdate.setDisable(false);
         btnDelete.setDisable(false);
-        DtoAttendenceTea dtoAttendenceTea = tableView.getSelectionModel().getSelectedItem();
-        if (dtoAttendenceTea != null) {
-            attendanceID.setText(dtoAttendenceTea.getAttendID());
-            adminID.setText(dtoAttendenceTea.getAdminID());
-            cmbTeaID.setValue(dtoAttendenceTea.getTeacherID());
-            cmbclassID.setValue(dtoAttendenceTea.getClassID());
-            datePicker.setValue(LocalDate.parse(dtoAttendenceTea.getDate()));
-            if (dtoAttendenceTea.getStatus() == false) {
+        AttendenceTeaTM AttendenceTea = tableView.getSelectionModel().getSelectedItem();
+        if (AttendenceTea != null) {
+            attendanceID.setText(AttendenceTea.getAttendID());
+            adminID.setText(AttendenceTea.getAdminID());
+            cmbTeaID.setValue(AttendenceTea.getTeacherID());
+            cmbclassID.setValue(AttendenceTea.getClassID());
+            datePicker.setValue(LocalDate.parse(AttendenceTea.getDate()));
+            if (AttendenceTea.getStatus() == false) {
                 setAttendLabel(false);
             } else {
                 setAttendLabel(true);
 
             }
             try {
-                System.out.println(dtoAttendenceTea);
-                attendTeaModel.setAttendance(dtoAttendenceTea.getAttendID(), dtoAttendenceTea.getToggleSwitch().getSwitchedOn());
+                System.out.println(AttendenceTea);
+                attendanceTeaBO.setAttendance(AttendenceTea.getAttendID(), AttendenceTea.getToggleSwitch().getSwitchedOn());
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -213,10 +233,10 @@ public class AttendanceTeaController implements Initializable {
                 }
             } else if (chackDate(datePicker.getValue())) {
                 try {
-                    String string = attendTeaModel.updateAtted(new DtoAttendenceTea(attendanceID.getText(),
+                    boolean result = attendanceTeaBO.update(new DtoAttendenceTea(attendanceID.getText(),
                             datePicker.getValue().toString(), adminID.getText(), cmbTeaID.getValue(),
                             btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false),cmbclassID.getValue() ));
-                    new Alert(Alert.AlertType.INFORMATION, string).show();
+                    new Alert(Alert.AlertType.INFORMATION, result?"Done":"something went wrong..!").show();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -237,8 +257,8 @@ public class AttendanceTeaController implements Initializable {
 
     public void deleteAttend(ActionEvent actionEvent) {
         try {
-            String result = attendTeaModel.deleteAttedTea(attendanceID.getText());
-            new Alert(Alert.AlertType.INFORMATION, result).show();
+            boolean result = attendanceTeaBO.delete(attendanceID.getText());
+            new Alert(Alert.AlertType.INFORMATION, result?"deleted":"Failed").show();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -255,10 +275,10 @@ public class AttendanceTeaController implements Initializable {
             }
         } else if (chackDate(datePicker.getValue())) {
             try {
-                String string = attendTeaModel.saveAttedTea(new DtoAttendenceTea(attendanceID.getText(),
+                boolean result = attendanceTeaBO.save(new DtoAttendenceTea(attendanceID.getText(),
                         datePicker.getValue().toString(), adminID.getText(), cmbTeaID.getValue(),
                         btnPresent.isSelected() ? new ToggleSwitch(true) : new ToggleSwitch(false),cmbclassID.getValue() ));
-                new Alert(Alert.AlertType.INFORMATION, string).show();
+                new Alert(Alert.AlertType.INFORMATION, result?"Done":"something went wrong..!").show();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -276,7 +296,12 @@ public class AttendanceTeaController implements Initializable {
 
     public void lordTeacherIDs(MouseEvent mouseEvent) {
         try {
-            cmbTeaID.setItems(attendTeaModel.lordTeaIDs());
+            ObservableList<String> observableList=FXCollections.observableArrayList();
+            teacherBO.getAll().forEach(teacherBO->{
+                observableList.add(teacherBO.getTeacherID());
+            });
+            cmbTeaID.setItems(observableList);
+
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -286,7 +311,11 @@ public class AttendanceTeaController implements Initializable {
 
     public void lordClassIDs(MouseEvent mouseEvent) {
         try {
-            cmbclassID.setItems(attendTeaModel.lordClassIDS());
+            ObservableList<String> observableList=FXCollections.observableArrayList();
+            classBO.getClassIDs().forEach(dtoClass -> {
+                observableList.add(dtoClass.getClassID());
+            });
+            cmbclassID.setItems(observableList);
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -299,7 +328,7 @@ public class AttendanceTeaController implements Initializable {
     }
 
     public void teaSearch() {
-        FilteredList<DtoAttendenceTea> filterDate = new FilteredList<>(tableView.getItems(), e -> true);
+        FilteredList<AttendenceTeaTM> filterDate = new FilteredList<>(tableView.getItems(), e -> true);
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filterDate.setPredicate(dto -> {
                 if (newValue == null || newValue.isEmpty()) {
@@ -315,7 +344,7 @@ public class AttendanceTeaController implements Initializable {
 
             });
         });
-        SortedList<DtoAttendenceTea> sortedList = new SortedList<>(filterDate);
+        SortedList<AttendenceTeaTM> sortedList = new SortedList<>(filterDate);
         sortedList.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedList);
 

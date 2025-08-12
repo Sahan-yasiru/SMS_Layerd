@@ -1,6 +1,7 @@
 package org.example.smslayerd.bo.custom;
 
 import org.example.smslayerd.bo.SuperBO;
+import org.example.smslayerd.entity.Student;
 import org.example.smslayerd.model.DtoClass;
 import org.example.smslayerd.model.DtoStudent;
 
@@ -16,5 +17,6 @@ public interface StudentBO extends SuperBO {
     public String getNewId()throws SQLException;
     public DtoStudent search(String id)throws SQLException;
     public String getNumber() throws SQLException;
+    public ArrayList<DtoStudent> getStudentIDs() throws SQLException;
 
 }

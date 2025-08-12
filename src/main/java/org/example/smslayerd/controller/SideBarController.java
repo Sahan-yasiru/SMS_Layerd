@@ -1,5 +1,7 @@
 package org.example.smslayerd.controller;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,10 +11,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +36,10 @@ public class SideBarController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(1500), temp);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
         lblWelcome.setText(" Welcome " + LoginController.getLabel());
         lordPage("dashboradpage.fxml");
     }
@@ -76,9 +85,11 @@ public class SideBarController implements Initializable {
     public void lordClasses(ActionEvent actionEvent) {
         lordPage("ClassPage.fxml");
     }
+
     public void lordExmas(ActionEvent actionEvent) {
         lordPage("ExamPage.fxml");
     }
+
     public void lordTimeTable(ActionEvent actionEvent) {
         lordPage("TimeTable.fxml");
     }
@@ -108,15 +119,15 @@ public class SideBarController implements Initializable {
             Button btn = (Button) event.getSource();
 
             ScaleTransition scaleT = new ScaleTransition(Duration.millis(200), btn);
-            scaleT.setToX(1.2);
-            scaleT.setToY(1.2);
+            scaleT.setToX(btn.getScaleX()+0.1);
+            scaleT.setToY(btn.getScaleY()+0.1);
             scaleT.play();
 
             DropShadow glow = new DropShadow();
             glow.setColor(Color.CORNFLOWERBLUE);
-            glow.setWidth(15);
-            glow.setHeight(15);
-            glow.setRadius(15);
+            glow.setWidth(2);
+            glow.setHeight(2);
+            glow.setRadius(2);
             btn.setEffect(glow);
 
         }
