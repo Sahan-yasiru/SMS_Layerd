@@ -28,7 +28,26 @@ public class StudentBOImpl  implements StudentBO {
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+        boolean b;
+        Connection connection = DBController.getInstance().getConnection();
+        try {
+            connection.setAutoCommit(false);
+            attendStudentDAO.deleteUseStu(id);
+            b=studentDAO.delete(id);
+            if(b){
+                connection.commit();
+                connection.setAutoCommit(true);
+                return true;
+            }else {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                return false;
+            }
+
+        } catch (Exception e) {
+            connection.setAutoCommit(true);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
