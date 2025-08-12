@@ -25,6 +25,11 @@ public class AttendTeacherDAOImpl implements AttendTeacherDAO, QueryDAO {
     UserDAOImpl userDAO = (UserDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.User);
 
     @Override
+    public boolean deleteUseTea(String teacherId) throws SQLException {
+        return CRUD.executeQuery("DELETE From Attendance_Tea where Teacher_ID = ?",teacherId);
+    }
+
+    @Override
     public boolean setAttendance(String attendID, Boolean state) throws SQLException {
         return false;
     }

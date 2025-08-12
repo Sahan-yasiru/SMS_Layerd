@@ -26,18 +26,21 @@ public class TeacherDAOImpl implements TeacherDao {
     }
 
     @Override
-    public boolean save(Teacher dto) throws SQLException {
-        return false;
+    public boolean save(Teacher ety) throws SQLException {
+        String sql="INSERT INTO Teacher VALUES(?,?,?,?,?)";
+        return CRUD.executeQuery(sql,ety.getTeacherID(),ety.getSubjectID(),ety.getName(),
+                ety.getClassId(),ety.getGradeAssign());
     }
 
     @Override
-    public boolean update(Teacher dto) throws SQLException {
-        return false;
+    public boolean update(Teacher ety) throws SQLException {
+        String sql="UPDATE Teacher SET Name= ? ,Class_ID = ? ,Grades_Assigned= ?,Subject_ID = ?  WHERE Teacher_ID = ?";
+        return CRUD.executeQuery(sql,ety.getName(),ety.getClassId(),ety.getGradeAssign(),ety.getSubjectID(),ety.getTeacherID());
     }
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+        return CRUD.executeQuery("DELETE FROM Teacher WHERE Teacher_ID = ?",id);
     }
 
     @Override
@@ -47,11 +50,20 @@ public class TeacherDAOImpl implements TeacherDao {
 
     @Override
     public String getNewId() throws SQLException {
-        return "";
+        ResultSet set=CRUD.executeQuery("SELECT Teacher_ID FROM Teacher ORDER BY Teacher_ID DESC LIMIT 1;");
+        if(set.next()){
+            int i = Integer.parseInt(set.getString(1).replaceAll("\\D+", "")) + 1; // extract number and increment                i+=1;
+            return String.format("T"+"%03d", i);
+
+        }else {
+            return "T001";
+        }
     }
 
     @Override
     public Teacher search(String id) throws SQLException {
         return null;
     }
+
+
 }

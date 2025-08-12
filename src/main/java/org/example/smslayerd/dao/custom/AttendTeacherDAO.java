@@ -11,6 +11,7 @@ public interface AttendTeacherDAO extends CRUDDao<AttendenceTea>  {
     public String[] autoSaveItems(ArrayList...arrayLists) throws SQLException;
     public boolean setAttendance(String attendID, Boolean state)throws SQLException;
     public boolean ifExitSP(AttendenceTea attendenceTea) throws SQLException;
+    public boolean deleteUseTea(String teacherId) throws SQLException;
 
 
 }

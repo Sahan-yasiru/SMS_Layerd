@@ -10,11 +10,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import lk.ijse.main.demo.dto.DtoStudent;
-import lk.ijse.main.demo.dto.DtoTeacher;
-import lk.ijse.main.demo.getID.IDGenerator;
-import lk.ijse.main.demo.model.StudetModel;
-import lk.ijse.main.demo.model.TeacherModel;
+import org.example.smslayerd.bo.BOFactory;
+import org.example.smslayerd.bo.custom.ClassBO;
+import org.example.smslayerd.bo.custom.SubjectBO;
+import org.example.smslayerd.bo.custom.TeacherBO;
+import org.example.smslayerd.bo.custom.impl.ClassBOImpl;
+import org.example.smslayerd.bo.custom.impl.SubjectBOImpl;
+import org.example.smslayerd.bo.custom.impl.TeacherBOImpl;
+import org.example.smslayerd.model.DtoTeacher;
+import org.example.smslayerd.view.tdm.TeacherTM;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -32,7 +36,7 @@ public class TeacherPageController implements Initializable {
     @FXML
     private ComboBox<String> cmbSubjectID;
     @FXML
-    private TableView<DtoTeacher> tableView;
+    private TableView<TeacherTM> tableView;
     ;
     @FXML
     private Button UpdateButton, saveButton, btnClear, DeleteBtn;
@@ -41,18 +45,18 @@ public class TeacherPageController implements Initializable {
     @FXML
     private Label lblTeacherID;
     @FXML
-    private TableColumn<DtoTeacher, String> colTeacherID, colSubjectID, colClassID, colTeaName;
+    private TableColumn<TeacherTM, String> colTeacherID, colSubjectID, colClassID, colTeaName;
     @FXML
-    private TableColumn<DtoStudent, Integer> colGrade;
+    private TableColumn<TeacherTM, Integer> colGrade;
     @FXML
     private Label lblNumber;
-    private TeacherModel teacherModel;
-    private IDGenerator idGenerator;
+    private TeacherBO teacherBO = (TeacherBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Teacher);
+    private ClassBO classBO = (ClassBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
+    private SubjectBO subjectBO=(SubjectBOImpl)BOFactory.getInstance().getBOType(BOFactory.BOTypes.Subject);
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        teacherModel = new TeacherModel();
-        idGenerator = new IDGenerator();
         reLode();
         clear();
         btnClear.setOnAction(actionEvent -> {
@@ -67,7 +71,7 @@ public class TeacherPageController implements Initializable {
 
     public void getID() {
         try {
-            lblTeacherID.setText(idGenerator.getID("T", "Teacher_ID", "Teacher"));
+            lblTeacherID.setText(teacherBO.getNewId());
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -83,8 +87,8 @@ public class TeacherPageController implements Initializable {
 
         } else {
             try {
-                String result=teacherModel.teacherSave(new DtoTeacher(lblTeacherID.getText(), cmbSubjectID.getValue(), txtName.getText(), cmbClassID.getValue(), cmbGrade.getValue()));
-                new Alert(Alert.AlertType.INFORMATION, result).show();
+                boolean result = teacherBO.save(new DtoTeacher(lblTeacherID.getText(), cmbSubjectID.getValue(), txtName.getText(), cmbClassID.getValue(), cmbGrade.getValue()));
+                new Alert(Alert.AlertType.INFORMATION, result ? "Done" : "Failed").show();
                 reLode();
                 clear();
             } catch (SQLException e) {
@@ -104,8 +108,8 @@ public class TeacherPageController implements Initializable {
 
         } else {
             try {
-                String result=teacherModel.teacherUpdate(new DtoTeacher(lblTeacherID.getText(), cmbSubjectID.getValue(), txtName.getText(), cmbClassID.getValue(), cmbGrade.getValue()));
-                new Alert(Alert.AlertType.INFORMATION, result).show();
+                boolean result = teacherBO.update(new DtoTeacher(lblTeacherID.getText(), cmbSubjectID.getValue(), txtName.getText(), cmbClassID.getValue(), cmbGrade.getValue()));
+                new Alert(Alert.AlertType.INFORMATION, result ? "Updated" : "Failed").show();
                 reLode();
                 clear();
             } catch (SQLException e) {
@@ -118,10 +122,8 @@ public class TeacherPageController implements Initializable {
 
     public void btnDelete(ActionEvent actionEvent) {
         try {
-            DtoTeacher dtoTeacher = new DtoTeacher();
-            dtoTeacher.setTeacherID(lblTeacherID.getText());
-            String result = teacherModel.deleteTea(dtoTeacher);
-            new Alert(Alert.AlertType.INFORMATION, result).show();
+            boolean result = teacherBO.delete(lblTeacherID.getText());
+            new Alert(Alert.AlertType.INFORMATION, result ? "Deleted" : "Failed").show();
             reLode();
             clear();
         } catch (SQLException e) {
@@ -141,8 +143,11 @@ public class TeacherPageController implements Initializable {
 
 
         try {
-            ObservableList<DtoTeacher> dtoTeachers = teacherModel.getTeacherData();
-            tableView.setItems(dtoTeachers);
+            ObservableList<TeacherTM> teacherTMS = FXCollections.observableArrayList();
+            teacherBO.getAll().forEach(dto -> {
+                teacherTMS.add(new TeacherTM(dto.getTeacherID(), dto.getSubjectID(), dto.getName(), dto.getClassId(), dto.getGradeAssign()));
+            });
+            tableView.setItems(teacherTMS);
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -173,7 +178,7 @@ public class TeacherPageController implements Initializable {
 
     public void setNumber() {
         try {
-            String result = teacherModel.getNumber();
+            String result = teacherBO.getNumber();
             lblNumber.setText(result);
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -186,7 +191,7 @@ public class TeacherPageController implements Initializable {
 
     public void searchSubject() {
         lordTable();
-        FilteredList<DtoTeacher> filteredList = new FilteredList<>(tableView.getItems(), e -> true);
+        FilteredList<TeacherTM> filteredList = new FilteredList<>(tableView.getItems(), e -> true);
         SearchBar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredList.setPredicate(dtoTeacher -> {
                 if (newValue == null || newValue.isEmpty()) {
@@ -197,11 +202,11 @@ public class TeacherPageController implements Initializable {
                         dtoTeacher.getSubjectID().toLowerCase().contains(filterText) ||
                         dtoTeacher.getName().toLowerCase().contains(filterText) ||
                         dtoTeacher.getClassId().toLowerCase().contains(filterText) ||
-                        dtoTeacher.getTeacherID().toLowerCase().contains(filterText)||
-                        Integer.toString(dtoTeacher.getGradeAssign()).toLowerCase().contains(filterText) ;
+                        dtoTeacher.getTeacherID().toLowerCase().contains(filterText) ||
+                        Integer.toString(dtoTeacher.getGradeAssign()).toLowerCase().contains(filterText);
             });
         });
-        SortedList<DtoTeacher> sortedList = new SortedList<>(filteredList);
+        SortedList<TeacherTM> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedList);
 
@@ -210,17 +215,17 @@ public class TeacherPageController implements Initializable {
 
     public void tableClicked(MouseEvent mouseEvent) {
         clear();
-        DtoTeacher dtoTeacher = tableView.getSelectionModel().getSelectedItem();
+        TeacherTM teacherTM = tableView.getSelectionModel().getSelectedItem();
 
-        if (dtoTeacher != null) {
+        if (teacherTM != null) {
             saveButton.setDisable(true);
             UpdateButton.setDisable(false);
             DeleteBtn.setDisable(false);
-            lblTeacherID.setText(dtoTeacher.getTeacherID());
-            txtName.setText(dtoTeacher.getName());
-            cmbSubjectID.setValue(dtoTeacher.getSubjectID());
-            cmbGrade.setValue(dtoTeacher.getGradeAssign());
-            cmbClassID.setValue(dtoTeacher.getClassId());
+            lblTeacherID.setText(teacherTM.getTeacherID());
+            txtName.setText(teacherTM.getName());
+            cmbSubjectID.setValue(teacherTM.getSubjectID());
+            cmbGrade.setValue(teacherTM.getGradeAssign());
+            cmbClassID.setValue(teacherTM.getClassId());
         }
 
 
@@ -228,8 +233,9 @@ public class TeacherPageController implements Initializable {
 
     public void lordClassID(MouseEvent mouseEvent) {
         try {
-            StudetModel studetModel = new StudetModel();
-            cmbClassID.setItems(studetModel.getclassIDs());
+            classBO.getClassIDs().forEach(dtoClass -> {
+                cmbClassID.getItems().add(new String(dtoClass.getClassID()));
+            });
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
             e.printStackTrace();
@@ -244,11 +250,13 @@ public class TeacherPageController implements Initializable {
 
         cmbGrade.setItems(grade);
     }
+
     public void lordSubjectIDs(MouseEvent mouseEvent) {
         try {
-            ObservableList<String> observableList=FXCollections.observableList(teacherModel.getSubjectIDs());
-            cmbSubjectID.setItems(observableList);
-        }catch (SQLException e){
+            subjectBO.getAll().forEach(dtoSubject -> {
+                cmbSubjectID.getItems().add(dtoSubject.getSubjectID());
+            });
+        } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }

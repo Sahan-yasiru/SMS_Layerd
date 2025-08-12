@@ -1,18 +1,25 @@
 package org.example.smslayerd.bo.custom.impl;
 
+import org.example.smslayerd.bo.custom.AttendanceTeaBO;
 import org.example.smslayerd.bo.custom.TeacherBO;
 import org.example.smslayerd.dao.DAOFactory;
+import org.example.smslayerd.dao.custom.AttendTeacherDAO;
 import org.example.smslayerd.dao.custom.TeacherDao;
+import org.example.smslayerd.dao.custom.impl.AttendTeacherDAOImpl;
 import org.example.smslayerd.dao.custom.impl.TeacherDAOImpl;
+import org.example.smslayerd.db.DBController;
+import org.example.smslayerd.entity.Teacher;
 import org.example.smslayerd.model.DtoStudent;
 import org.example.smslayerd.model.DtoTeacher;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TeacherBOImpl implements TeacherBO {
 
-    TeacherDao teacherDAO=(TeacherDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Teacher);
+    TeacherDao teacherDAO=(TeacherDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Teacher);
+    AttendTeacherDAO attendTeacherDAO=(AttendTeacherDAOImpl)DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.AttendanceTea);
 
 
 
@@ -27,17 +34,36 @@ public class TeacherBOImpl implements TeacherBO {
 
     @Override
     public boolean update(DtoTeacher dto) throws SQLException {
-        return false;
+        return teacherDAO.update(new Teacher(dto.getTeacherID(),dto.getSubjectID(),dto.getName(),dto.getClassId(),dto.getGradeAssign()));
     }
 
     @Override
     public boolean save(DtoTeacher dto) throws SQLException {
-        return false;
+        return teacherDAO.save(new Teacher(dto.getTeacherID(),dto.getSubjectID(),dto.getName(),dto.getClassId(),dto.getGradeAssign()));
     }
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+        boolean b;
+        Connection connection = DBController.getInstance().getConnection();
+        try {
+            connection.setAutoCommit(false);
+            attendTeacherDAO.deleteUseTea(id);
+            b=teacherDAO.delete(id);
+            if(b){
+                connection.commit();
+                connection.setAutoCommit(true);
+                return true;
+            }else {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                return false;
+            }
+
+        } catch (Exception e) {
+            connection.setAutoCommit(true);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -47,7 +73,7 @@ public class TeacherBOImpl implements TeacherBO {
 
     @Override
     public String getNewId() throws SQLException {
-        return "";
+        return teacherDAO.getNewId();
     }
 
     @Override

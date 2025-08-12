@@ -10,9 +10,11 @@
 }
 .number{
     -fx-background-color: #60B5FF;
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
-    -fx-font-size: 30;
+    -fx-font-size: 70;
+    -fx-font-scale: 20;
     -fx-background-radius: 20;
     -fx-alignment: center;
-
 }
+
