@@ -17,7 +17,8 @@ public class DAOFactory {
          Teacher,
          TimeTable,
          AttendanceStu,
-         AttendanceTea
+         AttendanceTea,
+         Exam
      }
      public SuperDao getDAO(DAOTypes enumDaoType){
         switch (enumDaoType){
@@ -29,6 +30,7 @@ public class DAOFactory {
             case TimeTable:return new TimeTableDAOImpl();
             case AttendanceStu:return new AttendStudentDAOImpl();
             case AttendanceTea:return new AttendTeacherDAOImpl();
+            case Exam:return new ExamDAOImpl();
             default:return null;
         }
 

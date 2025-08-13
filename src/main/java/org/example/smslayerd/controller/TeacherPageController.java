@@ -233,6 +233,7 @@ public class TeacherPageController implements Initializable {
 
     public void lordClassID(MouseEvent mouseEvent) {
         try {
+            cmbClassID.getItems().clear();
             classBO.getClassIDs().forEach(dtoClass -> {
                 cmbClassID.getItems().add(new String(dtoClass.getClassID()));
             });

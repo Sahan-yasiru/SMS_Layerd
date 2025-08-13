@@ -1,5 +1,7 @@
 package org.example.smslayerd.view.tdm;
 
+import org.example.smslayerd.model.DtoExam;
+
 public class ExamTM {
     private String examID;
     private String SubjectID;
@@ -15,6 +17,14 @@ public class ExamTM {
         this.exmaDate = exmaDate;
         this.teacherID = teacherID;
         this.marks = marks;
+    }
+    public ExamTM(DtoExam dtoExam) {
+        this.examID = dtoExam.getExamID();
+        this.SubjectID = dtoExam.getSubjectID();
+        this.studentID = dtoExam.getStudentID();
+        this.exmaDate = dtoExam.getExmaDate();
+        this.teacherID = dtoExam.getTeacherID();
+        this.marks = dtoExam.getMarks();
     }
     public ExamTM() {}
 
