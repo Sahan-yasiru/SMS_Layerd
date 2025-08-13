@@ -14,29 +14,29 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="898.0" prefWidth="1169.0" styleClass="pane" stylesheets="@css/Dashborad.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.main.demo.controller.ClassPageController">
+<AnchorPane prefHeight="898.0" prefWidth="1169.0" styleClass="pane" stylesheets="@assests/css/Dashborad.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.smslayerd.controller.ClassPageController">
    <children>
       <ImageView fitHeight="913.0" fitWidth="1174.0" layoutX="1.0" onMouseClicked="#reFreshTable" rotate="180.0">
          <image>
-            <Image url="@images/backgroundpic.jpg" />
+            <Image url="@assests/images/backgroundpic.jpg" />
          </image>
       </ImageView>
-      <Label layoutX="17.0" layoutY="22.0" prefHeight="44.0" prefWidth="424.0" stylesheets="@css/main.css" text="Manage Classes">
+      <Label layoutX="17.0" layoutY="22.0" prefHeight="44.0" prefWidth="424.0" stylesheets="@assests/css/main.css" text="Manage Classes">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
       </Label>
-      <VBox layoutX="5.0" layoutY="154.0" prefHeight="601.0" prefWidth="444.0" spacing="20.0" styleClass="cover" stylesheets="@css/main.css">
+      <VBox layoutX="5.0" layoutY="154.0" prefHeight="601.0" prefWidth="444.0" spacing="20.0" styleClass="cover" stylesheets="@assests/css/main.css">
          <children>
             <HBox prefHeight="61.0" prefWidth="584.0">
                <children>
-                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@css/main.css" text="Class ID:" />
-                  <Label fx:id="lblClassID" prefHeight="54.0" prefWidth="371.0" styleClass="colorNormalF" stylesheets="@css/main.css" text="class ID" />
+                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@assests/css/main.css" text="Class ID:" />
+                  <Label fx:id="lblClassID" prefHeight="54.0" prefWidth="371.0" styleClass="colorNormalF" stylesheets="@assests/css/main.css" text="class ID" />
                </children>
             </HBox>
             <HBox prefHeight="61.0" prefWidth="584.0">
                <children>
-                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@css/main.css" text="Subject ID :" />
+                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@assests/css/main.css" text="Subject ID :" />
                   <ComboBox fx:id="cmbSubjectID" onMouseClicked="#lordSubjectID" prefHeight="26.0" prefWidth="379.0">
                      <HBox.margin>
                         <Insets top="10.0" />
@@ -46,7 +46,7 @@
             </HBox>
             <HBox prefHeight="61.0" prefWidth="584.0">
                <children>
-                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@css/main.css" text="TimeTable  ID:" />
+                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@assests/css/main.css" text="TimeTable  ID:" />
                   <ComboBox fx:id="cmbTimeTB" onMouseClicked="#lordTimeTBIDs" prefHeight="26.0" prefWidth="379.0">
                      <HBox.margin>
                         <Insets top="10.0" />
@@ -56,7 +56,7 @@
             </HBox>
             <HBox prefHeight="61.0" prefWidth="584.0">
                <children>
-                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@css/main.css" text="Grade      :" />
+                  <Label prefHeight="51.0" prefWidth="256.0" styleClass="lbl" stylesheets="@assests/css/main.css" text="Grade      :" />
                   <ComboBox fx:id="cmbGrade" onMouseClicked="#lordGrade" prefHeight="26.0" prefWidth="379.0">
                      <HBox.margin>
                         <Insets top="10.0" />
@@ -77,7 +77,7 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
       </VBox>
-      <TableView fx:id="tableView" layoutX="467.0" layoutY="150.0" onMouseClicked="#tableClicked" prefHeight="601.0" prefWidth="697.0" stylesheets="@css/Tables.css">
+      <TableView fx:id="tableView" layoutX="467.0" layoutY="150.0" onMouseClicked="#tableClicked" prefHeight="601.0" prefWidth="697.0" stylesheets="@assests/css/Tables.css">
         <columns>
           <TableColumn fx:id="colClassID" prefWidth="119.0" text="class_ID" />
           <TableColumn fx:id="colGrade" prefWidth="104.0" text="Grade" />
@@ -103,12 +103,12 @@
             <Font name="System Bold Italic" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="109.0" layoutY="108.0" prefHeight="51.0" prefWidth="256.0" stylesheets="@css/main.css" text="Add,Remove,Update Class">
+      <Label layoutX="109.0" layoutY="108.0" prefHeight="51.0" prefWidth="256.0" stylesheets="@assests/css/main.css" text="Add,Remove,Update Class">
          <font>
             <Font name="System Bold Italic" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="SearchBar" alignment="CENTER" layoutX="387.0" layoutY="21.0" prefHeight="45.0" prefWidth="434.0" promptText="Search Class" style="-fx-background-color: #A8F1FF; -fx-background-radius: 20; -fx-border-color: #000000; -fx-border-radius: 20;" stylesheets="@css/mainpage.css">
+      <TextField fx:id="SearchBar" alignment="CENTER" layoutX="387.0" layoutY="21.0" onKeyPressed="#searchBar" prefHeight="45.0" prefWidth="434.0" promptText="Search Class" style="-fx-background-color: #A8F1FF; -fx-background-radius: 20; -fx-border-color: #000000; -fx-border-radius: 20;" stylesheets="@assests/css/mainpage.css">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>

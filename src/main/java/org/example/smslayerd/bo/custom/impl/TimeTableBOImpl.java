@@ -11,10 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TimeTableBOImpl implements TimeTableBO {
-    private TimeTableDao timeTableDAO=(TimeTableDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.TimeTable);
+    private TimeTableDao timeTableDAO=(TimeTableDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.TimeTable);
     @Override
     public ArrayList<DtoTimeTable> getAll() throws SQLException {
-        return null;
+        ArrayList<DtoTimeTable> dtoTimeTables=new ArrayList<>();
+        timeTableDAO.getAll().forEach(timeTable -> {
+            dtoTimeTables.add(new DtoTimeTable(timeTable));
+        });
+        return dtoTimeTables;
     }
 
     @Override

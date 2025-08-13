@@ -1,5 +1,7 @@
 package org.example.smslayerd.dao.custom.impl;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.example.smslayerd.dao.CRUD;
 import org.example.smslayerd.dao.custom.QueryDAO;
 import org.example.smslayerd.dao.custom.TimeTableDao;
@@ -38,7 +40,13 @@ public class TimeTableDAOImpl implements TimeTableDao, QueryDAO {
 
     @Override
     public ArrayList<TimeTable> getAll() throws SQLException {
-        return null;
+        String sql="SELECT * FROM Time_Table";
+        ResultSet set= CRUD.executeQuery(sql);
+        ArrayList<TimeTable> list = new ArrayList<>();
+        while (set.next()){
+            list.add(new TimeTable(set.getString(1),set.getString(2),set.getString(3),set.getString(4),set.getString(5),null));
+        }
+        return list;
     }
 
     @Override

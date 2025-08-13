@@ -4,13 +4,16 @@ import org.example.smslayerd.bo.custom.ClassBO;
 import org.example.smslayerd.dao.DAOFactory;
 import org.example.smslayerd.dao.custom.ClassDao;
 import org.example.smslayerd.dao.custom.impl.ClassDAOImpl;
+import org.example.smslayerd.db.DBController;
+import org.example.smslayerd.entity.Class;
 import org.example.smslayerd.model.DtoClass;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClassBOImpl implements ClassBO {
-    ClassDao classDAO=(ClassDao) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Class);
+    ClassDao classDAO=(ClassDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Class);
 
     @Override
     public ArrayList<DtoClass> getClassIDs() throws SQLException {
@@ -23,22 +26,26 @@ public class ClassBOImpl implements ClassBO {
 
     @Override
     public ArrayList<DtoClass> getAll() throws SQLException {
-        return null;
+        ArrayList<DtoClass> dtoClasses=new ArrayList<>();
+        classDAO.getAll().forEach(aClass -> {
+            dtoClasses.add(new DtoClass(aClass.getClassID(),aClass.getGrade(),aClass.getTimeTableID(),aClass.getSubjectID()));
+        });
+        return dtoClasses;
     }
 
     @Override
     public boolean save(DtoClass dto) throws SQLException {
-        return false;
+        return classDAO.save(new Class(dto.getClassID(),dto.getGrade(),dto.getTimeTableID(),dto.getSubjectID()));
     }
 
     @Override
     public boolean update(DtoClass dto) throws SQLException {
-        return false;
+        return classDAO.update(new Class(dto.getClassID(),dto.getGrade(),dto.getTimeTableID(),dto.getSubjectID()));
     }
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+        return classDAO.delete(id);
     }
 
     @Override
@@ -48,7 +55,7 @@ public class ClassBOImpl implements ClassBO {
 
     @Override
     public String getNewId() throws SQLException {
-        return "";
+        return classDAO.getNewId();
     }
 
     @Override

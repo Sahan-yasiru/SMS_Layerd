@@ -160,6 +160,7 @@ public class AttendanceTeaController implements Initializable {
         });
 
         try {
+            tableView.getItems().clear();
             attendanceTeaBO.getAll().forEach(teacherBO->{
                 tableView.getItems().add(new AttendenceTeaTM(teacherBO));
             });

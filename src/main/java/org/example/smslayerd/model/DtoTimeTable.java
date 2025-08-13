@@ -1,5 +1,7 @@
 package org.example.smslayerd.model;
 
+import org.example.smslayerd.entity.TimeTable;
+
 public class DtoTimeTable {
     private String timeTableID;
     private String subjectID;
@@ -15,7 +17,14 @@ public class DtoTimeTable {
         this.endTime = endTime;
         this.dayOfWeek = dayOfWeek;
         this.subjectName=subjectName;
-
+    }
+    public DtoTimeTable(TimeTable timeTable) {
+        this.timeTableID = timeTable.getTimeTableID();
+        this.subjectID = timeTable.getSubjectID();
+        this.startTime = timeTable.getStartTime();
+        this.endTime = timeTable.getEndTime();
+        this.dayOfWeek = timeTable.getDayOfWeek();
+        this.subjectName=timeTable.getSubjectName();
     }
 
     public String getTimeTableID() {

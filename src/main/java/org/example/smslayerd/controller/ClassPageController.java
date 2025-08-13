@@ -9,11 +9,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import lk.ijse.main.demo.dto.DtoClass;
-import lk.ijse.main.demo.dto.DtoStudent;
-import lk.ijse.main.demo.getID.IDGenerator;
-import lk.ijse.main.demo.model.ClassModel;
+import org.example.smslayerd.bo.BOFactory;
+import org.example.smslayerd.bo.custom.ClassBO;
+import org.example.smslayerd.bo.custom.SubjectBO;
+import org.example.smslayerd.bo.custom.TimeTableBO;
+import org.example.smslayerd.bo.custom.impl.ClassBOImpl;
+import org.example.smslayerd.bo.custom.impl.SubjectBOImpl;
+import org.example.smslayerd.bo.custom.impl.TimeTableBOImpl;
+import org.example.smslayerd.model.DtoClass;
+import org.example.smslayerd.view.tdm.ClassTM;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -27,7 +33,7 @@ public class ClassPageController implements Initializable {
     @FXML
     private ComboBox<String> cmbTimeTB,cmbSubjectID;
     @FXML
-    private TableView<DtoClass> tableView;
+    private TableView<ClassTM> tableView;
     @FXML
     private Button UpdateButton, saveButton, btnClear, DeleteBtn;
     @FXML
@@ -35,18 +41,18 @@ public class ClassPageController implements Initializable {
     @FXML
     private Label lblClassID;
     @FXML
-    private TableColumn<DtoClass, String> colClassID, colTimeTB, colSubjectID;
+    private TableColumn<ClassTM, String> colClassID, colTimeTB, colSubjectID;
     @FXML
-    private TableColumn<DtoStudent, Integer> colGrade;
+    private TableColumn<ClassTM, Integer> colGrade;
     @FXML
     private Label lblNumber;
-    private ClassModel classModel;
-    private IDGenerator idGenerator;
+
+    private ClassBO classBO=(ClassBOImpl) BOFactory.getInstance().getBOType(BOFactory.BOTypes.Class);
+    private SubjectBO subjectBO=(SubjectBOImpl)BOFactory.getInstance().getBOType(BOFactory.BOTypes.Subject);
+    private TimeTableBO timeTableBO=(TimeTableBOImpl)BOFactory.getInstance().getBOType(BOFactory.BOTypes.TimeTable);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        classModel = new ClassModel();
-        idGenerator = new IDGenerator();
         reLode();
         clear();
         btnClear.setOnAction(actionEvent -> {
@@ -55,12 +61,11 @@ public class ClassPageController implements Initializable {
             cmbGrade.setValue(null);
             cmbSubjectID.setValue(null);
         });
-        searchSubject();
     }
 
     public void getID() {
         try {
-            lblClassID.setText(idGenerator.getID("C", "Class_ID", "Class"));
+            lblClassID.setText(classBO.getNewId());
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -76,8 +81,8 @@ public class ClassPageController implements Initializable {
 
         } else {
             try {
-                String result= classModel.classSave(new DtoClass(lblClassID.getText(), cmbGrade.getValue(),cmbTimeTB.getValue(), cmbSubjectID.getValue()));
-                new Alert(Alert.AlertType.INFORMATION, result).show();
+                boolean result= classBO.save(new DtoClass(lblClassID.getText(), cmbGrade.getValue(),cmbTimeTB.getValue(), cmbSubjectID.getValue()));
+                new Alert(Alert.AlertType.INFORMATION, result?"Saved":"Failed").show();
                 reLode();
                 clear();
             } catch (SQLException e) {
@@ -97,8 +102,8 @@ public class ClassPageController implements Initializable {
 
         } else {
             try {
-                String result= classModel.classUpdate(new DtoClass(lblClassID.getText(), cmbGrade.getValue(),cmbTimeTB.getValue(), cmbSubjectID.getValue()));
-                new Alert(Alert.AlertType.INFORMATION, result).show();
+                boolean result= classBO.update(new DtoClass(lblClassID.getText(), cmbGrade.getValue(),cmbTimeTB.getValue(), cmbSubjectID.getValue()));
+                new Alert(Alert.AlertType.INFORMATION, result?"Updated":"Failed").show();
                 reLode();
                 clear();
             } catch (SQLException e) {
@@ -111,10 +116,8 @@ public class ClassPageController implements Initializable {
 
     public void btnDelete(ActionEvent actionEvent) {
         try {
-            DtoClass dtoClass = new DtoClass();
-            dtoClass.setClassID(lblClassID.getText());
-            String result = classModel.deleteClass(dtoClass);
-            new Alert(Alert.AlertType.INFORMATION, result).show();
+            boolean result = classBO.delete(lblClassID.getText());
+            new Alert(Alert.AlertType.INFORMATION, result?"Deleted":"Failed").show();
             reLode();
             clear();
         } catch (SQLException e) {
@@ -131,7 +134,10 @@ public class ClassPageController implements Initializable {
         colGrade.setCellValueFactory(new PropertyValueFactory<>("grade"));
 
         try {
-            ObservableList<DtoClass> dtoClasses = classModel.getClassData();
+            ObservableList<ClassTM> dtoClasses = FXCollections.observableArrayList();
+            classBO.getAll().forEach(dtoClass -> {
+                dtoClasses.add(new ClassTM(dtoClass.getClassID(),dtoClass.getGrade(),dtoClass.getTimeTableID(),dtoClass.getSubjectID()));
+            });
             tableView.setItems(dtoClasses);
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -162,7 +168,7 @@ public class ClassPageController implements Initializable {
 
     public void setNumber() {
         try {
-            String result = classModel.getNumber();
+            String result = classBO.getNumber();
             lblNumber.setText(result);
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -173,9 +179,9 @@ public class ClassPageController implements Initializable {
         reLode();
     }
 
-    public void searchSubject() {
+    public void searchBar(KeyEvent keyEvent) {
         lordTable();
-        FilteredList<DtoClass> filteredList = new FilteredList<>(tableView.getItems(), e -> true);
+        FilteredList<ClassTM> filteredList = new FilteredList<>(tableView.getItems(), e -> true);
         SearchBar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredList.setPredicate(dtoClass -> {
                 if (newValue == null || newValue.isEmpty()) {
@@ -188,7 +194,7 @@ public class ClassPageController implements Initializable {
                         Integer.toString(dtoClass.getGrade()).toLowerCase().contains(filterText) ;
             });
         });
-        SortedList<DtoClass> sortedList = new SortedList<>(filteredList);
+        SortedList<ClassTM> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedList);
 
@@ -196,17 +202,17 @@ public class ClassPageController implements Initializable {
 
     public void tableClicked(MouseEvent mouseEvent) {
         clear();
-        DtoClass dtoClass = tableView.getSelectionModel().getSelectedItem();
+        ClassTM classTM = tableView.getSelectionModel().getSelectedItem();
 
-        if (dtoClass != null) {
+        if (classTM != null) {
             saveButton.setDisable(true);
             UpdateButton.setDisable(false);
             DeleteBtn.setDisable(false);
-            lblClassID.setText(dtoClass.getClassID());
-            cmbSubjectID.setValue(dtoClass.getSubjectID());
-            cmbGrade.setValue(dtoClass.getGrade());
-            cmbSubjectID.setValue(dtoClass.getSubjectID());
-            cmbTimeTB.setValue(dtoClass.getTimeTableID());
+            lblClassID.setText(classTM.getClassID());
+            cmbSubjectID.setValue(classTM.getSubjectID());
+            cmbGrade.setValue(classTM.getGrade());
+            cmbSubjectID.setValue(classTM.getSubjectID());
+            cmbTimeTB.setValue(classTM.getTimeTableID());
         }
 
     }
@@ -221,8 +227,10 @@ public class ClassPageController implements Initializable {
     }
     public void lordSubjectID(MouseEvent mouseEvent) {
         try {
-            ObservableList<String> observableList=FXCollections.observableList(classModel.getSubjectIDs());
-            cmbSubjectID.setItems(observableList);
+            cmbSubjectID.getItems().clear();
+            subjectBO.getAll().forEach(dtoSubject -> {
+                cmbSubjectID.getItems().add(dtoSubject.getSubjectID());
+            });
         }catch (SQLException e){
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -230,8 +238,10 @@ public class ClassPageController implements Initializable {
     }
     public void lordTimeTBIDs(MouseEvent mouseEvent) {
         try {
-            ObservableList<String> observableList=FXCollections.observableList(classModel.getTimeTBIDs());
-            cmbTimeTB.setItems(observableList);
+            cmbTimeTB.getItems().clear();
+            timeTableBO.getAll().forEach(dtoTimeTable -> {
+                cmbTimeTB.getItems().add(dtoTimeTable.getTimeTableID());
+            });
         }catch (SQLException e){
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
