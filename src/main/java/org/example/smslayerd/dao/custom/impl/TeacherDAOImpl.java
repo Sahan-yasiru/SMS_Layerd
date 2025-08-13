@@ -50,7 +50,7 @@ public class TeacherDAOImpl implements TeacherDao {
 
     @Override
     public String getNewId() throws SQLException {
-        ResultSet set=CRUD.executeQuery("SELECT Teacher_ID FROM Teacher ORDER BY Teacher_ID DESC LIMIT 1;");
+        ResultSet set=CRUD.executeQuery("SELECT Time_Table_ID FROM Time_Table ORDER BY Time_Table_ID DESC LIMIT 1;");
         if(set.next()){
             int i = Integer.parseInt(set.getString(1).replaceAll("\\D+", "")) + 1; // extract number and increment                i+=1;
             return String.format("T"+"%03d", i);

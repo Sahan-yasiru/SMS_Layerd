@@ -7,6 +7,7 @@ import org.example.smslayerd.dao.custom.QueryDAO;
 import org.example.smslayerd.dao.custom.TimeTableDao;
 import org.example.smslayerd.entity.TimeTable;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
@@ -50,18 +51,20 @@ public class TimeTableDAOImpl implements TimeTableDao, QueryDAO {
     }
 
     @Override
-    public boolean save(TimeTable dto) throws SQLException {
-        return false;
+    public boolean save(TimeTable ety) throws SQLException {
+        String sql="INSERT INTO Time_Table VALUES (?,?,?,?,?)";
+        return CRUD.executeQuery(sql,ety.getTimeTableID(),ety.getSubjectID(),ety.getStartTime(),ety.getEndTime(),ety.getDayOfWeek());
     }
 
     @Override
-    public boolean update(TimeTable dto) throws SQLException {
-        return false;
+    public boolean update(TimeTable ety) throws SQLException {
+        String sql="UPDATE Time_Table SET Subject_ID = ? ,Start_Time = ?,End_Time = ? ,day_of_week= ? where Time_Table_ID = ?";
+        return CRUD.executeQuery(sql,ety.getSubjectID(),ety.getStartTime(),ety.getEndTime(),ety.getDayOfWeek(),ety.getTimeTableID());
     }
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+        return CRUD.executeQuery("DELETE FROM  Time_Table WHERE Time_Table_ID = ?",id);
     }
 
     @Override

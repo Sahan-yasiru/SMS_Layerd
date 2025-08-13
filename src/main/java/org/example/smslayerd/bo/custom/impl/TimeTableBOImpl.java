@@ -23,17 +23,17 @@ public class TimeTableBOImpl implements TimeTableBO {
 
     @Override
     public boolean save(DtoTimeTable dto) throws SQLException {
-        return false;
+        return timeTableDAO.save(new TimeTable(dto));
     }
 
     @Override
     public boolean update(DtoTimeTable dto) throws SQLException {
-        return false;
+        return timeTableDAO.update(new TimeTable(dto));
     }
 
     @Override
     public boolean delete(String id) throws SQLException {
-        return false;
+        return timeTableDAO.delete(id);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class TimeTableBOImpl implements TimeTableBO {
 
     @Override
     public String getNewId() throws SQLException {
-        return "";
+        return timeTableDAO.getNewId();
     }
 
     @Override
