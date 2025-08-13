@@ -76,13 +76,6 @@ public class AttendStudentDAOImpl implements AttendStudentDAO, QueryDAO {
 
     @Override
     public ArrayList<AttendenceStu> getAll() throws SQLException {
-        ArrayList[] arrays = checkRegistered();
-        String[] logs = autoSaveItems(arrays);
-
-        if (logs != null) {
-            System.out.println(Arrays.toString(logs));
-        }
-
         ResultSet set = CRUD.executeQuery("SELECT * FROM Attendance_Stu");
         ArrayList<AttendenceStu> attendanceList = new ArrayList<>();
 

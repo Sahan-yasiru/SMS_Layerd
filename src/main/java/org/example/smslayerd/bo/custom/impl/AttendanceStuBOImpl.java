@@ -3,17 +3,20 @@ package org.example.smslayerd.bo.custom.impl;
 import org.example.smslayerd.bo.custom.AttendanceStuBO;
 import org.example.smslayerd.dao.DAOFactory;
 import org.example.smslayerd.dao.custom.AttendStudentDAO;
+import org.example.smslayerd.dao.custom.QueryDAO;
 import org.example.smslayerd.dao.custom.impl.AttendStudentDAOImpl;
 import org.example.smslayerd.entity.AttendenceStu;
 import org.example.smslayerd.model.DtoAttendenceStu;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AttendanceStuBOImpl implements AttendanceStuBO {
 
 
     AttendStudentDAO attendStudentDAO = (AttendStudentDAO) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.AttendanceStu);
+    QueryDAO queryDAO=(AttendStudentDAOImpl)DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.AttendanceStu);
 
     @Override
     public boolean ifExitSP(DtoAttendenceStu attendenceStu) throws SQLException {
@@ -32,6 +35,12 @@ public class AttendanceStuBOImpl implements AttendanceStuBO {
 
     @Override
     public ArrayList<DtoAttendenceStu> getAll() throws SQLException {
+        ArrayList[] arrays=queryDAO.checkRegistered();
+        String []logs=attendStudentDAO.autoSaveItems(arrays);
+
+        if(logs!=null){
+            System.out.println(Arrays.toString(logs));
+        }
         ArrayList<AttendenceStu> attendenceStusETY = attendStudentDAO.getAll();
         ArrayList<DtoAttendenceStu> dtoAttendenceStus = new ArrayList<>();
         for (AttendenceStu attendenceStu : attendenceStusETY) {
@@ -76,5 +85,10 @@ public class AttendanceStuBOImpl implements AttendanceStuBO {
     public DtoAttendenceStu search(String id) throws SQLException {
         return null;
     }
+
+
+
+
+
 
 }
