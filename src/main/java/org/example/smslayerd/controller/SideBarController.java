@@ -97,7 +97,7 @@ public class SideBarController implements Initializable {
 
     public void pressedExit(ActionEvent actionEvent) {
         try {
-            Parent parent = FXMLLoader.load(getClass().getResource("/view/Exitpage.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/org/example/smslayerd/Exitpage.fxml"));
             Scene scene = new Scene(parent);
             scene.setFill(Color.TRANSPARENT);
 
