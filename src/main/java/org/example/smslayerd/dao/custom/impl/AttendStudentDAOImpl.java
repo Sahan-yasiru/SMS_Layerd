@@ -62,15 +62,6 @@ public class AttendStudentDAOImpl implements AttendStudentDAO, QueryDAO {
             classIDs.add(classSet.getString(1));
         }
 
-        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        for (String studentID : studentIds) {
-            for (String classID : classIDs) {
-                ResultSet chackSet = CRUD.executeQuery("SELECT * FROM Attendance_Stu  WHERE Student_ID = ? AND Class_ID = ? AND Date = ?", studentID, classID, today);
-                if (chackSet.next()) {
-                    return null;
-                }
-            }
-        }
         return new ArrayList[]{studentIds, classIDs};
     }
 
@@ -149,37 +140,7 @@ public class AttendStudentDAOImpl implements AttendStudentDAO, QueryDAO {
 
     @Override
     public String[] autoSaveItems(ArrayList... arrayLists) throws SQLException {
-        ArrayList<String> insertedLogs = new ArrayList<>();
-        if (arrayLists == null || arrayLists.length < 2 || arrayLists[0] == null || arrayLists[1] == null) {
-            return null;
-        } else {
-            ArrayList<String> studentIDs = arrayLists[0];
-            ArrayList<String> classIDs = arrayLists[1];
-
-            String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            for (String studentID : studentIDs) {
-                ResultSet classSet = CRUD.executeQuery("SELECT Class_ID FROM Student WHERE Student_ID = ?", studentID);
-                if (classSet.next()) {
-                    String classID = classSet.getString("Class_ID");
-                    ResultSet exists = CRUD.executeQuery(
-                            "SELECT * FROM Attendance_Stu WHERE Date = ? AND Student_ID = ? AND Class_ID = ?", today, studentID, classID);
-                    String adminName= userDAO.getAdminName(LoginController.getLabel());
-                    if (!exists.next()) {
-                        boolean inserted = CRUD.executeQuery("INSERT INTO Attendance_Stu VALUES (?, ?, ?, ?, ?, ?)",
-                                getNewId(),
-                                today,
-                                adminName,
-                                studentID,
-                                classID,
-                                false);
-                        if (inserted) {
-                            insertedLogs.add(studentID + " , " + classID + " , " + today);
-                        }
-                    }
-                }
-            }
-        }
-        return insertedLogs.toArray(new String[0]);
+        return null;
     }
 
     @Override

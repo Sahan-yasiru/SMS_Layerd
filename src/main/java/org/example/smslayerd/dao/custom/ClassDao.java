@@ -8,4 +8,5 @@ import java.util.ArrayList;
 
 public interface ClassDao extends CRUDDao<Class> {
     public ArrayList<Class> getClassIDS()throws SQLException;
+    public String chackStuAvl(String id) throws SQLException;
 }

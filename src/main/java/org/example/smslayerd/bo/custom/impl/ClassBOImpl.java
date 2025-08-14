@@ -4,16 +4,20 @@ import org.example.smslayerd.bo.custom.ClassBO;
 import org.example.smslayerd.dao.DAOFactory;
 import org.example.smslayerd.dao.custom.ClassDao;
 import org.example.smslayerd.dao.custom.impl.ClassDAOImpl;
-import org.example.smslayerd.db.DBController;
 import org.example.smslayerd.entity.Class;
 import org.example.smslayerd.model.DtoClass;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClassBOImpl implements ClassBO {
     ClassDao classDAO=(ClassDAOImpl) DAOFactory.getInstance().getDAO(DAOFactory.DAOTypes.Class);
+
+
+    @Override
+    public String chackStuAvl(String id) throws SQLException {
+        return classDAO.chackStuAvl(id);
+    }
 
     @Override
     public ArrayList<DtoClass> getClassIDs() throws SQLException {

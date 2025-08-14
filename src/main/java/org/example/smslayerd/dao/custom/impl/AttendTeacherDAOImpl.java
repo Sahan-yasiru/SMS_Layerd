@@ -76,13 +76,6 @@ public class AttendTeacherDAOImpl implements AttendTeacherDAO, QueryDAO {
 
     @Override
     public ArrayList<AttendenceTea> getAll() throws SQLException {
-        ArrayList[] arrays = checkRegistered();
-        String[] logs = autoSaveItems(arrays);
-
-        if (logs != null) {
-            System.out.println(Arrays.toString(logs));
-        }
-
         ResultSet set = CRUD.executeQuery("SELECT * FROM Attendance_Tea");
         ArrayList<AttendenceTea> attendanceList = new ArrayList<>();
 
@@ -176,15 +169,6 @@ public class AttendTeacherDAOImpl implements AttendTeacherDAO, QueryDAO {
             classIDs.add(classSet.getString(1));
         }
 
-        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        for (String teacherID : teacherIDs) {
-            for (String classID : classIDs) {
-                ResultSet chackSet = CRUD.executeQuery("SELECT * FROM Attendance_Tea  WHERE Teacher_ID = ? AND Class_ID = ? AND Date = ?", teacherID, classID, today);
-                if (chackSet.next()) {
-                    return null;
-                }
-            }
-        }
         return new ArrayList[]{teacherIDs, classIDs};
     }
 

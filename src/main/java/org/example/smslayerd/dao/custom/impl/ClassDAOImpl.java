@@ -10,6 +10,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClassDAOImpl implements ClassDao {
+
+    @Override
+    public String chackStuAvl(String id) throws SQLException {
+        ResultSet set= CRUD.executeQuery("SELECT Class_ID FROM Student WHERE Student_ID = ?",id);
+        return set.next()?set.getString(1):null;
+    }
+
     @Override
     public ArrayList<Class> getClassIDS() throws SQLException {
         String sql = "SELECT Class_ID FROM Class";

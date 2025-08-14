@@ -6,5 +6,5 @@ import org.example.smslayerd.entity.Teacher;
 import java.sql.SQLException;
 
 public interface TeacherDao extends CRUDDao<Teacher> {
-
+    String chackTeaAvl(String id) throws SQLException;
 }

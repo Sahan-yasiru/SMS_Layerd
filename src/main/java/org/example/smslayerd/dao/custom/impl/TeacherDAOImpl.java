@@ -9,6 +9,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TeacherDAOImpl implements TeacherDao {
+
+
+    @Override
+    public String chackTeaAvl(String id) throws SQLException {
+        ResultSet set=CRUD.executeQuery("SELECT Class_ID FROM Teacher WHERE Teacher_ID = ?",id);
+        return set.next()?set.getString(1):null;
+    }
+
     @Override
     public String getNumber() throws SQLException {
         ResultSet set= CRUD.executeQuery("SELECT COUNT(Teacher_ID) FROM Teacher");
